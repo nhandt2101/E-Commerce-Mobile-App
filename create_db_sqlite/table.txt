@@ -1,0 +1,39 @@
+-- create database
+sqlite3 Mobile.db
+
+-- Users table
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY NOT NULL,
+    name TEXT DEFAULT 'abc abc',
+    age INTEGER DEFAULT 18,
+    email TEXT NOT NULL,
+    password TEXT NOT NULL
+);
+
+-- Seller table
+CREATE TABLE IF NOT EXISTS seller (
+    id INTEGER PRIMARY KEY NOT NULL,
+    name TEXT DEFAULT 'abc abc',
+    email TEXT NOT NULL,
+    password TEXT NOT NULL
+);
+
+-- Goods table
+CREATE TABLE IF NOT EXISTS goods (
+    id INTEGER PRIMARY KEY NOT NULL,
+    name TEXT DEFAULT 'abc abc',
+    seller_id INTEGER NOT NULL,
+    amount REAL NOT NULL,
+    FOREIGN KEY (seller_id) REFERENCES seller(id)
+);
+
+-- Order table
+CREATE TABLE IF NOT EXISTS order_table (
+    id INTEGER PRIMARY KEY NOT NULL,
+    goods_id INTEGER NOT NULL,
+    users_id INTEGER NOT NULL,
+    quantity INTEGER NOT NULL,
+    order_date TEXT NOT NULL,
+    FOREIGN KEY (goods_id) REFERENCES goods(id),
+    FOREIGN KEY (users_id) REFERENCES users(id)
+);
