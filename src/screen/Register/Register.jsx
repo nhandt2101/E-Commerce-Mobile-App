@@ -134,7 +134,9 @@ export default function RegisterScreen({ navigation }) {
             Sign up
           </Button>
         </VStack>
-
+        <HStack mt="6" justifyContent="center">
+            <Text fontSize="md" color="indigo.500" onPress={() => navigation.navigate('RegisterSalesman')}>Đăng ký tài khoản người bán hàng</Text> 
+        </HStack>
         <HStack space={1} alignItems="center" mt={2}>
           <Text>Bạn đã có tài khoản?</Text>
           <Text fontSize="md" color="indigo.500" onPress={handleLogIn}>

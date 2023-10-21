@@ -95,6 +95,11 @@ export default function LoginScreen({ navigation }) {
               Sign Up
             </Link>
           </HStack>
+          <HStack mt="6" justifyContent="center">
+            <Link _text={{ color: "indigo.500", fontWeight: "medium", fontSize: "sm" }} onPress={() => navigation.navigate('LoginSalesman')}>
+              Đăng nhập tài khoản bán hàng
+            </Link>
+          </HStack>
         </VStack>
       </Box>
     </Center>

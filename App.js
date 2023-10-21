@@ -7,6 +7,8 @@ import { StatusBar } from 'react-native';
 import LoginScreen from './src/screen/Login/Login';
 import HomeScreen from './src/screen/Home/Home';
 import Register from './src/screen/Register/Register';
+import LoginSalesman from './src/screen/LoginSalesman/LoginSalesman';
+import RegisterSalesman from './src/screen/RegisterSalesman/RegisterSalesman';
 
 const Stack = createStackNavigator();
 
@@ -20,14 +22,16 @@ function App() {
           barStyle="dark-content"
         />
         <Stack.Navigator
-          initialRouteName="Register"
+          initialRouteName="Login"
           screenOptions={{
-            headerShown: false,
+            headerShown: true,
           }}
         >
           <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="LoginSalesman" component={LoginSalesman} />
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Register" component={Register} />
+          <Stack.Screen name="RegisterSalesman" component={RegisterSalesman} />
         </Stack.Navigator>
       </NativeBaseProvider>
     </NavigationContainer>
