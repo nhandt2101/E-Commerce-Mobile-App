@@ -10,13 +10,14 @@ import Register from './src/screen/Register/Register';
 import LoginSalesman from './src/screen/LoginSalesman/LoginSalesman';
 import RegisterSalesman from './src/screen/RegisterSalesman/RegisterSalesman';
 import HomeSalesman from './src/screen/Home/HomeSalesman';
+import CartScreen from './src/screen/Cart/Cart';
+import Customer from './src/screen/Customer/Customer';
 
 const Stack = createStackNavigator();
 
 function App() {
   return (
     <NavigationContainer>
-      {/* Rest of your code */}
       <NativeBaseProvider>
         <StatusBar
           backgroundColor="#ffffff"
@@ -34,6 +35,9 @@ function App() {
           <Stack.Screen name="Register" component={Register} />
           <Stack.Screen name="RegisterSalesman" component={RegisterSalesman} />
           <Stack.Screen name="HomeSalesman" component={HomeSalesman} />
+          <Stack.Screen name="Account" component={Customer} />
+          <Stack.Screen name="Cart" component={CartScreen} />
+          
         </Stack.Navigator>
       </NativeBaseProvider>
     </NavigationContainer>
