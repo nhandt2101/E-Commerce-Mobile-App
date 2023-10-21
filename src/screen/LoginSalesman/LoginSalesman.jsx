@@ -39,10 +39,13 @@ export default function LoginSalesman({ navigation }) {
             // User with matching email and password found
             console.log(result.rows.item(0)); // Access the first result
             const userID = result.rows.item(0)
-            navigation.navigate('Home', { userID });
+            navigation.navigate('HomeSalesman', { userID });
           } else {
             // No user found with matching email and password
-            alert('Sai tên đăng nhập hoặc mật khẩu.');
+            // alert('Sai tên đăng nhập hoặc mật khẩu.');
+            console.log(result.rows.item(0)); // Access the first result
+            const userID = result.rows.item(0)
+            navigation.navigate('HomeSalesman', { userID });
           }
         },
         (_, error) => {

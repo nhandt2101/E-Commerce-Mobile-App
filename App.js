@@ -9,6 +9,7 @@ import HomeScreen from './src/screen/Home/Home';
 import Register from './src/screen/Register/Register';
 import LoginSalesman from './src/screen/LoginSalesman/LoginSalesman';
 import RegisterSalesman from './src/screen/RegisterSalesman/RegisterSalesman';
+import HomeSalesman from './src/screen/Home/HomeSalesman';
 
 const Stack = createStackNavigator();
 
@@ -32,6 +33,7 @@ function App() {
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Register" component={Register} />
           <Stack.Screen name="RegisterSalesman" component={RegisterSalesman} />
+          <Stack.Screen name="HomeSalesman" component={HomeSalesman} />
         </Stack.Navigator>
       </NativeBaseProvider>
     </NavigationContainer>
