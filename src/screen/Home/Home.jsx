@@ -1,76 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, TouchableOpacity, Text, FlatList, Image, Dimensions } from "react-native";
-import ReactNativeInputSearchBar from "react-native-input-search-bar";
-import Icon from "react-native-vector-icons/FontAwesome";
-import { useNavigation } from "@react-navigation/native";
+import { View, StyleSheet, TouchableOpacity, Text, FlatList, Image, Dimensions, TextInput } from "react-native";
 
-// Sample product data
-const products = [
-  {
-    id: "1",
-    name: "Product 1",
-    image: "https://example.com/product1.jpg",
-    price: "$10.99",
-    description: "abc abc abc abc abc abc abc abc abc abc abc abc abc",
-  },
-  {
-    id: "2",
-    name: "Product 2",
-    image: "https://example.com/product2.jpg",
-    price: "$15.99",
-    description: "abc abc abc abc abc abc abc abc abc abc abc abc abc",
-  },
-  {
-    id: "3",
-    name: "Product 1",
-    image: "https://example.com/product1.jpg",
-    price: "$10.99",
-    description: "abc abc abc abc abc abc abc abc abc abc abc abc abc",
-  },
-  {
-    id: "4",
-    name: "Product 2",
-    image: "https://example.com/product2.jpg",
-    price: "$15.99",
-    description: "abc abc abc abc abc abc abc abc abc abc abc abc abc",
-  },
-  {
-    id: "5",
-    name: "Product 1",
-    image: "https://example.com/product1.jpg",
-    price: "$10.99",
-    description: "abc abc abc abc abc abc abc abc abc abc abc abc abc",
-  },
-  {
-    id: "6",
-    name: "Product 2",
-    image: "https://example.com/product2.jpg",
-    price: "$15.99",
-    description: "abc abc abc abc abc abc abc abc abc abc abc abc abc",
-  },
-  {
-    id: "7",
-    name: "Product 1",
-    image: "https://example.com/product1.jpg",
-    price: "$10.99",
-    description: "abc abc abc abc abc abc abc abc abc abc abc abc abc",
-  },
-  {
-    id: "8",
-    name: "Product 2",
-    image: "https://example.com/product2.jpg",
-    price: "$15.99",
-    description: "abc abc abc abc abc abc abc abc abc abc abc abc abc",
-  },
-];
+import Navigator from "../../component/navigative";
+import { getAllProduct } from '../../db/product';
 
-export default function HomeScreen({ route }) {
+export default function HomeScreen({ navigation }) {
   const [query, setQuery] = useState("");
   const [activeSearch, setActiveSearch] = useState(false);
-  const navigation = useNavigation();
+  const [products, setProducts] = useState([]);
 
-  const onSubmitSearch = (val) => {
-    setQuery(val);
+  const getProductsFromDatabase = async () => {
+    try {
+      const productData = await getAllProduct();
+      setProducts(productData);
+    } catch (error) {
+      console.error("Error fetching products from the database:", error);
+    }
+  };
+
+  const onSubmitSearch = () => {
+    setActiveSearch(true);
   };
 
   const getNumColumns = () => {
@@ -87,11 +36,14 @@ export default function HomeScreen({ route }) {
 
     Dimensions.addEventListener("change", updateLayout);
 
-    // Clean up the event listener when the component unmounts
     return () => {
       Dimensions.removeEventListener("change", updateLayout);
     };
-  }, []); // Truyền một mảng rỗng để đảm bảo useEffect chỉ chạy một lần khi component được tạo.
+  }, []);
+
+  useEffect(() => {
+    getProductsFromDatabase();
+  }, []);
 
   const renderItem = ({ item }) => (
     <View style={styles.productItem}>
@@ -113,29 +65,18 @@ export default function HomeScreen({ route }) {
 
   return (
     <View style={styles.container}>
-      <ReactNativeInputSearchBar
-        onSubmitSearch={onSubmitSearch}
-        onActiveSearch={setActiveSearch}
-        inputTextStyle={{}}
-        buttonStyle={{
-          paddingHorizontal: 20,
-          borderWidth: 0.3,
-          borderRadius: 20,
-        }}
-        buttonTextStyle={{}}
-        searchToolContainerStyle={{ height: 40 }}
-        inputContainerStyle={{
-          backgroundColor: "white",
-          borderWidth: 0.3,
-          borderRadius: 20,
-        }}
-        inputProps={{
-          placeholder: "Please enter your search query",
-          onChangeText: (text) => setQuery(text),
-          value: query.toString(),
-        }}
-        buttonText="Search"
-      />
+
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search products"
+          value={query}
+          onChangeText={setQuery}
+        />
+        <TouchableOpacity style={styles.searchButton} onPress={onSubmitSearch}>
+          <Text style={styles.searchButtonText}>Search</Text>
+        </TouchableOpacity>
+      </View>
 
       <FlatList
         data={products}
@@ -145,47 +86,7 @@ export default function HomeScreen({ route }) {
         contentContainerStyle={styles.productList}
       />
 
-      <View style={styles.bottomBar}>
-        <TouchableOpacity
-          style={styles.bottomBarButton}
-          onPress={() => navigation.navigate("Home")}
-        >
-          <View style={styles.buttonContent}>
-            <Icon name="home" size={24} color="white" />
-            <Text style={styles.buttonText}>Home</Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.bottomBarButton}
-          onPress={() => navigation.navigate("Messages")}
-        >
-          <View style={styles.buttonContent}>
-            <Icon name="envelope" size={24} color="white" />
-            <Text style={styles.buttonText}>Messages</Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.bottomBarButton}
-          onPress={() => navigation.navigate("Cart")}
-        >
-          <View style={styles.buttonContent}>
-            <Icon name="shopping-cart" size={24} color="white" />
-            <Text style={styles.buttonText}>Cart</Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.bottomBarButton}
-          onPress={() => navigation.navigate("Account")}
-        >
-          <View style={styles.buttonContent}>
-            <Icon name="user" size={24} color="white" />
-            <Text style={styles.buttonText}>Account</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
+      <Navigator></Navigator>
     </View>
   );
 }
@@ -194,6 +95,29 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 50,
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 10,
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    marginRight: 10,
+  },
+  searchButton: {
+    backgroundColor: "blue",
+    padding: 8,
+    borderRadius: 5,
+  },
+  searchButtonText: {
+    color: "white",
+    fontWeight: "bold",
   },
   productDescription: {
     fontSize: 14,
@@ -241,28 +165,5 @@ const styles = StyleSheet.create({
   productName: {
     fontSize: 18,
     fontWeight: "bold",
-  },
-  bottomBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "black",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  bottomBarButton: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    flex: 1,
-  },
-  buttonContent: {
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "white",
-    marginTop: 5,
-    marginBottom: 5,
   },
 });

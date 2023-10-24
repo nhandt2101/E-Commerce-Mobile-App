@@ -1,103 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import { Center, Box, Heading, VStack, FormControl, Input, Button, Text, HStack } from 'native-base';
-import * as SQLite from 'expo-sqlite';
+import { CheckBox } from 'react-native-elements';
+
+import { createTableUser, dropTableUser, insertUser } from '../../db/user';
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('')
-
-  const db = SQLite.openDatabase('Mobile.db');
-
-  useEffect(() => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        `CREATE TABLE IF NOT EXISTS users (
-          id INTEGER PRIMARY KEY NOT NULL,
-          name TEXT DEFAULT 'abc abc',
-          age INTEGER DEFAULT 18,
-          email TEXT NOT NULL,
-          password TEXT NOT NULL
-      );`,
-        [],
-        (_, result) => {
-          // Xử lý sau khi cơ sở dữ liệu được tạo hoặc đã tồn tại
-        },
-        (_, error) => {
-          console.error('Lỗi tạo cơ sở dữ liệu:', error);
-        }
-      );
-    });
-  }, []);
-
-  // useEffect(() => {
-  //   db.transaction((tx) => {
-  //     // Drop the 'users' table if it exists
-  //     tx.executeSql(
-  //       `DROP TABLE IF EXISTS users`,
-  //       [],
-  //       (_, result) => {
-  //         // Table dropped successfully or did not exist
-  //         console.log('Table dropped successfully or did not exist.');
-          
-  //         // Now, create the 'users' table
-  //         tx.executeSql(
-  //           `CREATE TABLE IF NOT EXISTS users (
-  //             id INTEGER PRIMARY KEY NOT NULL,
-  //             name TEXT DEFAULT 'abc abc',
-  //             age INTEGER DEFAULT 18,
-  //             email TEXT NOT NULL,
-  //             password TEXT NOT NULL
-  //           );`,
-  //           [],
-  //           (_, result) => {
-  //             // Xử lý sau khi cơ sở dữ liệu được tạo hoặc đã tồn tại
-  //           },
-  //           (_, error) => {
-  //             console.error('Lỗi tạo cơ sở dữ liệu:', error);
-  //           }
-  //         );
-  //       },
-  //       (_, error) => {
-  //         console.error('Lỗi xóa bảng:', error);
-  //       }
-  //     );
-  //   }, []);
-  // });
+  const [error, setError] = useState('');
+  const [isSelected, setSelection] = useState(false);
 
   const handleLogIn = () => {
     navigation.navigate('Login');
   };
 
+  useEffect(() => {
+    async function initializeDatabase() {
+      await createTableUser();
+    }
+    initializeDatabase();
+  }, []);
+
   const handleSignUp = async () => {
-    setError('')
+    setError('');
+
     if (password !== confirmPassword) {
-      setError('Mật khẩu xác nhận không trùng khớp')
+      setError('Mật khẩu xác nhận không trùng khớp');
       return;
     }
 
-    if (password.length < 8) { 
-      setError('Mật khẩu phải nhiều hơn 8 ký tự.')
+    if (password.length < 8) {
+      setError('Mật khẩu phải nhiều hơn 8 ký tự.');
       return;
     }
-    db.transaction((tx) => {
-      tx.executeSql(
-        'INSERT INTO users (email, password) VALUES (?, ?)', [email, password],
-        (_, result) => {
-          if (result.rowsAffected > 0) {
-            alert('Đăng ký thành công.');
-            handleLogIn();
-          } else {
-            alert('Đăng ký thất bại. Vui lòng thử lại.');
-          }
-        },
-        (_, error) => {
-          console.error('Lỗi thêm người dùng:', error);
-          alert('Đăng ký thất bại. Vui lòng thử lại.');
-        }
-      )
-    })
+
+    try {
+      await insertUser(email, password, isSelected);
+      alert('Đăng ký thành công.');
+      handleLogIn();
+    } catch (error) {
+      alert('Đăng ký thất bại. Vui lòng thử lại.');
+    }
   };
 
   return (
@@ -130,13 +74,17 @@ export default function RegisterScreen({ navigation }) {
             <FormControl.Label>Confirm Password</FormControl.Label>
             <Input placeholder="Confirm Password" type="password" value={confirmPassword} onChangeText={text => setConfirmPassword(text)} />
           </FormControl>
+
+          <CheckBox
+            title='Tài khoản người bán hàng'
+            checked={isSelected}
+            onPress={() => setSelection(!isSelected)}
+          />
+
           <Button mt={2} colorScheme="indigo" onPress={handleSignUp}>
             Sign up
           </Button>
         </VStack>
-        <HStack mt="6" justifyContent="center">
-            <Text fontSize="md" color="indigo.500" onPress={() => navigation.navigate('RegisterSalesman')}>Đăng ký tài khoản người bán hàng</Text> 
-        </HStack>
         <HStack space={1} alignItems="center" mt={2}>
           <Text>Bạn đã có tài khoản?</Text>
           <Text fontSize="md" color="indigo.500" onPress={handleLogIn}>
@@ -146,4 +94,4 @@ export default function RegisterScreen({ navigation }) {
       </Box>
     </Center>
   );
-}
+};

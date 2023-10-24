@@ -4,11 +4,9 @@ import { NativeBaseProvider } from 'native-base';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'react-native';
 
-import LoginScreen from './src/screen/Login/Login';
 import HomeScreen from './src/screen/Home/Home';
+import LoginScreen from './src/screen/Login/Login';
 import Register from './src/screen/Register/Register';
-import LoginSalesman from './src/screen/LoginSalesman/LoginSalesman';
-import RegisterSalesman from './src/screen/RegisterSalesman/RegisterSalesman';
 import HomeSalesman from './src/screen/Home/HomeSalesman';
 import CartScreen from './src/screen/Cart/Cart';
 import Customer from './src/screen/Customer/Customer';
@@ -30,10 +28,8 @@ function App() {
           }}
         >
           <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="LoginSalesman" component={LoginSalesman} />
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Register" component={Register} />
-          <Stack.Screen name="RegisterSalesman" component={RegisterSalesman} />
           <Stack.Screen name="HomeSalesman" component={HomeSalesman} />
           <Stack.Screen name="Account" component={Customer} />
           <Stack.Screen name="Cart" component={CartScreen} />

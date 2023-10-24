@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, StyleSheet, Text, TextInput, TouchableOpacity, FlatList } from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome";
+
+import Navigator from "../../component/navigative";
 
 const SellerScreen = ({ navigation }) => {
   const [products, setProducts] = useState([
@@ -60,47 +61,7 @@ const SellerScreen = ({ navigation }) => {
         style={styles.productList}
       />
 
-      <View style={styles.bottomBar}>
-        <TouchableOpacity
-          style={styles.bottomBarButton}
-          onPress={() => navigation.navigate("Home")}
-        >
-          <View style={styles.buttonContent}>
-            <Icon name="home" size={24} color="white" />
-            <Text style={styles.buttonText}>Home</Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.bottomBarButton}
-          onPress={() => navigation.navigate("Messages")}
-        >
-          <View style={styles.buttonContent}>
-            <Icon name="envelope" size={24} color="white" />
-            <Text style={styles.buttonText}>Messages</Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.bottomBarButton}
-          onPress={() => navigation.navigate("Cart")}
-        >
-          <View style={styles.buttonContent}>
-            <Icon name="shopping-cart" size={24} color="white" />
-            <Text style={styles.buttonText}>Cart</Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.bottomBarButton}
-          onPress={() => navigation.navigate("Account")}
-        >
-          <View style={styles.buttonContent}>
-            <Icon name="user" size={24} color="white" />
-            <Text style={styles.buttonText}>Account</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
+      <Navigator></Navigator>
     </View>
   );
 };
@@ -108,7 +69,7 @@ const SellerScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    marginTop: 50,
   },
   inputContainer: {
     marginBottom: 20,
@@ -151,26 +112,6 @@ const styles = StyleSheet.create({
   },
   productList: {
     flex: 1,
-  },
-  bottomBar: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    backgroundColor: "black",
-    paddingVertical: 10,
-    width: "100%"
-  },
-  bottomBarButton: {
-    flex: 1,
-    alignItems: "center",
-  },
-  buttonContent: {
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "white",
-    marginTop: 5,
   },
 });
 
