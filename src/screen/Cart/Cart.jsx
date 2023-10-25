@@ -1,45 +1,55 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from "react-native";
 import Navigator from "../../component/navigative";
 
-const productsInCart = [
-    {
-        id: "1",
-        name: "Product 1",
-        image: "https://example.com/product1.jpg",
-        price: "$10.99",
-        description: "abc abc abc abc abc abc abc abc abc abc abc abc abc",
-    },
-    {
-        id: "2",
-        name: "Product 2",
-        image: "https://example.com/product2.jpg",
-        price: "$15.99",
-        description: "abc abc abc abc abc abc abc abc abc abc abc abc abc",
-    },
-    // Add more products as needed
-];
+import { createTableCart, dropTableCart, getCart } from "../../db/cart";
 
-export default function CartScreen({ route }) {
+export default function CartScreen({ navigation }) {
+    const [products, setProducts] = useState(null);
+
+    useEffect(() => {
+        createTableCart();
+        fetchData();
+    }, []);
+
+    // useEffect(() => {
+    //     console.log("Product updated:", products);
+    // }, [products]);
+
+    const fetchData = async () => {
+        try {
+            const data = await getCart();
+            console.log(data)
+            setProducts(data);
+        } catch (error) {
+            console.error("Error retrieving data:", error);
+        }
+    };
+
     const renderItem = ({ item }) => (
         <View style={styles.productItem}>
-            <Image source={{ uri: item.image }} style={styles.productImage} />
-            <Text style={styles.productName}>{item.name}</Text>
-            <Text style={styles.productDescription} numberOfLines={1}>
-                {item.description.length > 30
-                    ? item.description.substring(0, 30) + "..."
-                    : item.description}
-            </Text>
-            <Text style={styles.productPrice}>{item.price}</Text>
+            <View style={styles.productActions}>
+                <Image source={{ uri: item.link_img }} style={styles.productImage} />
+                <View style={styles.productInfo}>
+                    <Text style={styles.productName}>{item.productName}</Text>
+                    <Text style={styles.productDescription} numberOfLines={1}>
+                        {item.describe}
+                    </Text>
+                    <Text style={styles.productPrice}>{item.price}</Text>
+                    <TouchableOpacity style={styles.buyButton} onPress={() => addToCart(item)}>
+                        <Text style={styles.buyButtonText}>Buy</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
         </View>
     );
 
     return (
         <View style={styles.container}>
             <FlatList
-                data={productsInCart}
+                data={products}
                 renderItem={renderItem}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(item) => item.id}
             />
             <Navigator></Navigator>
         </View>
@@ -51,30 +61,44 @@ const styles = StyleSheet.create({
         flex: 1,
         marginTop: 50,
     },
-    productItem: {
-        backgroundColor: "#ffffff",
-        padding: 10,
-        marginVertical: 5,
-        borderRadius: 10,
-    },
-    productImage: {
+    productActions: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 20,
+      },
+      productImage: {
         width: 100,
         height: 100,
         resizeMode: "cover",
-        marginBottom: 5,
-    },
-    productName: {
+        marginRight: 10,
+      },
+      productInfo: {
+        flex: 1,
+        justifyContent: "center",
+      },
+      productName: {
         fontSize: 18,
         fontWeight: "bold",
-    },
-    productDescription: {
+      },
+      productDescription: {
         fontSize: 14,
-        color: "#333",
+        color: "gray",
         marginBottom: 5,
-    },
-    productPrice: {
+      },
+      productPrice: {
         fontSize: 16,
         fontWeight: "bold",
         color: "green",
-    },
+        marginRight: 5,
+      },
+      buyButton: {
+        backgroundColor: "blue",
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        borderRadius: 5,
+      },
+      buyButtonText: {
+        color: "white",
+        fontWeight: "bold",
+      },
 });

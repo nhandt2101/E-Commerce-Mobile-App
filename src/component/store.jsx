@@ -17,6 +17,7 @@ export const getData = async (key) => {
     console.error('Error retrieving data:', e);
   }
 };
+
 export const retrieveData = async (key) => {
   try {
     const value = await AsyncStorage.getItem(key);

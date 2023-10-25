@@ -1,13 +1,12 @@
 import * as SQLite from 'expo-sqlite';
-const levenshtein = require('fast-levenshtein');
 
 const db = SQLite.openDatabase('Mobile.db');
 
-const createTableProduct = () => {
+const createTableCart = () => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        `CREATE TABLE IF NOT EXISTS products (
+        `CREATE TABLE IF NOT EXISTS cart (
           id INTEGER PRIMARY KEY NOT NULL,
           link_img TEXT NOT NULL,
           name TEXT DEFAULT 'Product name',
@@ -32,11 +31,11 @@ const createTableProduct = () => {
 };
 
 
-const insertProduct = (name, price, describe, link_img, sale_id) => {
+const insertCart = (name, price, describe, link_img, sale_id) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        'INSERT INTO products (name, price, describe, link_img, sale_id) VALUES (?, ?, ?, ?, ?)',
+        'INSERT INTO cart (name, price, describe, link_img, sale_id) VALUES (?, ?, ?, ?, ?)',
         [name, price, describe, link_img, sale_id],
         (_, result) => {
           if (result.rowsAffected > 0) {
@@ -54,11 +53,11 @@ const insertProduct = (name, price, describe, link_img, sale_id) => {
   });
 };
 
-const getAllProduct = () => {
+const getCart = () => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        'SELECT * FROM products',
+        'SELECT * FROM cart',
         [],
         (_, result) => {
           if (result.rows.length > 0) {
@@ -87,54 +86,11 @@ const getAllProduct = () => {
   });
 };
 
-const minDistance = 3;
-
-const findProduct = (input) => {
+const dropTableCart = () => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        'SELECT * FROM products',
-        [],
-        (_, result) => {
-          if (result.rows.length > 0) {
-            const products = [];
-
-            for (let i = 0; i < result.rows.length; i++) {
-              const productData = result.rows.item(i);
-              const productName = productData.name;
-              const productDescription = productData.describe;
-
-              const nameDistance = levenshtein.get(input, productName);
-              const descriptionDistance = levenshtein.get(input, productDescription);
-
-              if (nameDistance <= minDistance || descriptionDistance <= minDistance) {
-                products.push(productData);
-              }
-            }
-
-            if (products.length > 0) {
-              resolve(products);
-            } else {
-              reject(new Error('No matching products found.'));
-            }
-          } else {
-            reject(new Error('No products found.'));
-          }
-        },
-        (_, error) => {
-          console.error('Error querying products:', error);
-          reject(error);
-        }
-      );
-    });
-  });
-};
-
-const dropTableProduct = () => {
-  return new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        `DROP TABLE products`,
+        `DROP TABLE cart`,
         [],
         (_, result) => {
           // TODO
@@ -150,4 +106,4 @@ const dropTableProduct = () => {
   });
 };
 
-export { createTableProduct, insertProduct, getAllProduct, findProduct, dropTableProduct };
+export { createTableCart, insertCart, getCart, dropTableCart};

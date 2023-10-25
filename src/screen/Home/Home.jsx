@@ -2,9 +2,13 @@ import React, { useState, useEffect } from "react";
 import { View, StyleSheet, TouchableOpacity, Text, FlatList, Image, Dimensions, TextInput } from "react-native";
 
 import Navigator from "../../component/navigative";
-import { getAllProduct } from '../../db/product';
+import { createTableProduct, dropTableProduct, getAllProduct, insertProduct } from '../../db/product';
+
+import data from "../../db/products.json";
+import { getData, storeData } from "../../component/store";
 
 export default function HomeScreen({ navigation }) {
+
   const [query, setQuery] = useState("");
   const [activeSearch, setActiveSearch] = useState(false);
   const [products, setProducts] = useState([]);
@@ -19,7 +23,22 @@ export default function HomeScreen({ navigation }) {
   };
 
   const onSubmitSearch = () => {
-    setActiveSearch(true);
+    console.log(products);
+  }
+
+  const taodb = () => {
+    dropTableProduct()
+      .then(() => {
+      })
+      .catch((error) => {
+        console.error("Error dropping table:", error);
+      });
+
+    createTableProduct();
+    for (let i = 0; i < data.length; ++i) {
+      insertProduct(data[i].name, data[i].price, data[i].describe, data[i].link_img, 0)
+      console.log(data[i]['sale_id']);
+    }
   };
 
   const getNumColumns = () => {
@@ -30,33 +49,31 @@ export default function HomeScreen({ navigation }) {
   const [numColumns, setNumColumns] = useState(getNumColumns());
 
   useEffect(() => {
-    const updateLayout = () => {
-      setNumColumns(getNumColumns());
-    };
-
-    Dimensions.addEventListener("change", updateLayout);
-
-    return () => {
-      Dimensions.removeEventListener("change", updateLayout);
-    };
-  }, []);
-
-  useEffect(() => {
     getProductsFromDatabase();
-  }, []);
+  }, [])
+
+  const addToCart = async (product) => {
+    try {
+      storeData("@product", product);
+      navigation.navigate('Shopping');
+    } catch (error) {
+      console.error("Error store data:", error);
+    }
+
+  };
 
   const renderItem = ({ item }) => (
     <View style={styles.productItem}>
-      <Image source={{ uri: item.image }} style={styles.productImage} />
-      <Text style={styles.productName}>{item.name}</Text>
+      <Image source={{ uri: item.link_img }} style={styles.productImage} />
+      <Text style={styles.productName}>{item.productName}</Text>
       <Text style={styles.productDescription} numberOfLines={1}>
-        {item.description.length > 30
-          ? item.description.substring(0, 30) + "..."
-          : item.description}
+        {item.describe.length > 30
+          ? item.describe.substring(0, 30) + "..."
+          : item.describe}
       </Text>
       <View style={styles.productActions}>
         <Text style={styles.productPrice}>{item.price}</Text>
-        <TouchableOpacity style={styles.buyButton}>
+        <TouchableOpacity style={styles.buyButton} onPress={() => addToCart(item)}>
           <Text style={styles.buyButtonText}>Buy</Text>
         </TouchableOpacity>
       </View>
@@ -81,7 +98,7 @@ export default function HomeScreen({ navigation }) {
       <FlatList
         data={products}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.id}
         numColumns={numColumns}
         contentContainerStyle={styles.productList}
       />
@@ -94,7 +111,7 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 50,
+    marginTop: 20,
   },
   searchContainer: {
     flexDirection: "row",
@@ -104,16 +121,18 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    height: 40,
+    height: 33,
     borderColor: "gray",
     borderWidth: 1,
-    paddingHorizontal: 10,
-    marginRight: 10,
+    marginRight: 5,
+    marginLeft: 15,
+    borderRadius: 8
   },
   searchButton: {
     backgroundColor: "blue",
     padding: 8,
     borderRadius: 5,
+    marginRight: 15,
   },
   searchButtonText: {
     color: "white",
