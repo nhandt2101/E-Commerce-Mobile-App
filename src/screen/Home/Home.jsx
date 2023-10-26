@@ -12,28 +12,31 @@ export default function HomeScreen({ navigation }) {
   const [products, setProducts] = useState([]);
   const [txt, setTxt] = useState("Loadding...");
 
-  const getProductsFromDatabase = async () => {
-    try {
-      const productData = await getAllProduct();
-      setProducts(productData);
-    } catch (error) {
-      console.error("Error fetching products from the database:", error);
-      setTxt("Khong tim thay san pham");
-      setProducts([]);
-    }
-  };
+  // const getProductsFromDatabase = async () => {
+  //   try {
+  //     const productData = await getAllProduct();
+  //     setProducts(productData);
+  //   } catch (error) {
+  //     console.error("Error fetching products from the database:", error);
+  //     setTxt("Khong tim thay san pham");
+  //     setProducts([]);
+  //   }
+  // };
 
   const onSubmitSearch = async () => {
+<<<<<<< HEAD
     console.log(query.length);
+=======
+    // console.log(query);
+>>>>>>> c70b606d7b1ed267e4c273ec3f3b2c852c75bddd
 
     try {
       const data = await findProductTrue(query);
       setProducts([...data]);
-      console.log(products)
+      // console.log(products)
     } catch (e) {
       console.log(e);
       setProducts([]);
-
     }
   }
 
@@ -45,12 +48,17 @@ export default function HomeScreen({ navigation }) {
     //     console.error("Error dropping table:", error);
     //   });
 
+<<<<<<< HEAD
     createTableProduct();
     for (let i = 0; i < data.length; ++i) {
       insertProduct(data[i].name, data[i].price, data[i].describe, data[i].link_img, 0)
       console.log(data[i]['sale_id']);
     }
   };
+=======
+    
+  // };
+>>>>>>> c70b606d7b1ed267e4c273ec3f3b2c852c75bddd
 
   const getNumColumns = () => {
     const screenWidth = Dimensions.get("window").width;
@@ -60,7 +68,11 @@ export default function HomeScreen({ navigation }) {
   const [numColumns, setNumColumns] = useState(getNumColumns());
 
   useEffect(() => {
+<<<<<<< HEAD
     // onSubmitSearch();
+=======
+    onSubmitSearch();
+>>>>>>> c70b606d7b1ed267e4c273ec3f3b2c852c75bddd
     // getProductsFromDatabase();
   }, [])
 
