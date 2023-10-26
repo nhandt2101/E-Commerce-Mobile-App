@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from "react-native";
 import Navigator from "../../component/navigative";
 
@@ -36,9 +36,16 @@ export default function CartScreen({ navigation }) {
                         {item.describe}
                     </Text>
                     <Text style={styles.productPrice}>{item.price}</Text>
-                    <TouchableOpacity style={styles.buyButton} onPress={() => console.log(item)}>
-                        <Text style={styles.buyButtonText}>Buy</Text>
-                    </TouchableOpacity>
+                    <View style={styles.productRow}>
+                        
+                        <Text style={styles.quantityText}>Quantity: {item.quantity}</Text>
+                        <TouchableOpacity style={styles.buyButton} onPress={() => console.log(item)}>
+                            <Text style={styles.buyButtonText}>Buy</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.deleteButton} onPress={() => console.log(item)}>
+                            <Text style={styles.deleteButtonText}>Delete</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         </View>
@@ -65,40 +72,60 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         marginBottom: 20,
-      },
-      productImage: {
-        width: 100,
-        height: 100,
+    },
+    productImage: {
+        width: 130,
+        height: 130,
         resizeMode: "cover",
         marginRight: 10,
-      },
-      productInfo: {
+    },
+    productInfo: {
         flex: 1,
         justifyContent: "center",
-      },
-      productName: {
+    },
+    productName: {
         fontSize: 18,
         fontWeight: "bold",
-      },
-      productDescription: {
+    },
+    productDescription: {
         fontSize: 14,
         color: "gray",
         marginBottom: 5,
-      },
-      productPrice: {
+    },
+    productPrice: {
         fontSize: 16,
         fontWeight: "bold",
         color: "green",
         marginRight: 5,
-      },
-      buyButton: {
+    },
+    buyButton: {
         backgroundColor: "blue",
         paddingVertical: 5,
         paddingHorizontal: 10,
         borderRadius: 5,
-      },
-      buyButtonText: {
+    },
+    buyButtonText: {
         color: "white",
         fontWeight: "bold",
-      },
+    },
+    productRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 5,
+    },
+    quantityText: {
+        fontSize: 14,
+        marginRight: 10,
+    },
+    deleteButton: {
+        backgroundColor: "red",
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        borderRadius: 5,
+        marginLeft: 10,
+    },
+    deleteButtonText: {
+        color: "white",
+        fontWeight: "bold",
+    }
 });

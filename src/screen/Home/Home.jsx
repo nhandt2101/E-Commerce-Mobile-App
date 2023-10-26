@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, StyleSheet, TouchableOpacity, Text, FlatList, Image, Dimensions, TextInput } from "react-native";
 
 import Navigator from "../../component/navigative";
-import { createTableProduct, dropTableProduct, getAllProduct, insertProduct, findProduct, findProductTrue } from '../../db/product';
+import { createTableProduct, dropTableProduct, findProductCombined } from '../../db/product';
 import data from "../../db/products.json";
 import { getData, storeData } from "../../component/store";
 
@@ -12,49 +12,26 @@ export default function HomeScreen({ navigation }) {
   const [products, setProducts] = useState([]);
   const [txt, setTxt] = useState("Loadding...");
 
-  const getProductsFromDatabase = async () => {
-    try {
-      const productData = await getAllProduct();
-      setProducts(productData);
-    } catch (error) {
-      console.error("Error fetching products from the database:", error);
-      setTxt("Khong tim thay san pham");
-      setProducts([]);
+  useEffect(() => {
+    async function initializeDatabase() {
+      await createTableProduct();
     }
-  };
+    initializeDatabase();
+  });
 
   const onSubmitSearch = async () => {
-    console.log(query);
-
-    if (query == null || query == "" || query == undefined) {
-      query = ' '
-    }
-
     try {
-      const data = await findProductTrue(query);
+      const data = await findProductCombined(query);
       setProducts([...data]);
-      console.log(products)
+      if (products.length === 0) {
+        setTxt("Sorry! No find products.")
+      }
     } catch (e) {
       console.log(e);
+      setTxt("Sorry! No find products.")
       setProducts([]);
-
     }
   }
-
-  // const taodb = () => {
-  //   dropTableProduct()
-  //     .then(() => {
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error dropping table:", error);
-  //     });
-
-  //   createTableProduct();
-  //   for (let i = 0; i < data.length; ++i) {
-  //     insertProduct(data[i].name, data[i].price, data[i].describe, data[i].link_img, 0)
-  //     console.log(data[i]['sale_id']);
-  //   }
-  // };
 
   const getNumColumns = () => {
     const screenWidth = Dimensions.get("window").width;
@@ -65,7 +42,7 @@ export default function HomeScreen({ navigation }) {
 
   useEffect(() => {
     onSubmitSearch();
-  }, [])
+  }, [query])
 
   const addToCart = async (product) => {
     try {
@@ -79,12 +56,14 @@ export default function HomeScreen({ navigation }) {
 
   const renderItem = ({ item }) => (
     <View style={styles.productItem}>
-      <Image source={{ uri: item.link_img }} style={styles.productImage} />
-      <Text style={styles.productName}>{item.productName}</Text>
+      <TouchableOpacity onPress={() => addToCart(item)}>
+        <Image source={{ uri: item.link_img }} style={styles.productImage} />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => addToCart(item)}>
+        <Text style={styles.productName}>{item.productName}</Text>
+      </TouchableOpacity>
       <Text style={styles.productDescription} numberOfLines={1}>
-        {item.describe.length > 30
-          ? item.describe.substring(0, 30) + "..."
-          : item.describe}
+        {item.describe.length > 30? item.describe.substring(0, 30) + "...": item.describe}
       </Text>
       <View style={styles.productActions}>
         <Text style={styles.productPrice}>{item.price}</Text>
@@ -109,14 +88,6 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.searchButtonText}>Search</Text>
         </TouchableOpacity>
       </View>
-
-      {/* <FlatList
-        data={products}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        numColumns={numColumns}
-        contentContainerStyle={styles.productList}
-      /> */}
 
       {products.length === 0 ? (
         <Text>{txt}</Text>
