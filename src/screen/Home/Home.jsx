@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, TouchableOpacity, Text, FlatList, Image, Dimensions, TextInput } from "react-native";
-
+import { useNavigation } from "@react-navigation/native";
 import Navigator from "../../component/navigative";
 import { createTableProduct, dropTableProduct, findProductCombined } from '../../db/product';
-import data from "../../db/products.json";
 import { getData, storeData } from "../../component/store";
 
 export default function HomeScreen({ navigation }) {
-
+  const navigation2 = useNavigation();
   const [query, setQuery] = useState("");
   const [products, setProducts] = useState([]);
   const [txt, setTxt] = useState("Loadding...");
@@ -62,15 +61,19 @@ export default function HomeScreen({ navigation }) {
       <TouchableOpacity onPress={() => addToCart(item)}>
         <Text style={styles.productName}>{item.productName}</Text>
       </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation2.navigate("productDetails")}>
+      <Image source={{ uri: item.link_img }} style={styles.productImage} />
+      <Text style={styles.productName}>{item.productName}</Text>
       <Text style={styles.productDescription} numberOfLines={1}>
         {item.describe.length > 30? item.describe.substring(0, 30) + "...": item.describe}
       </Text>
-      <View style={styles.productActions}>
-        <Text style={styles.productPrice}>{item.price}</Text>
-        <TouchableOpacity style={styles.buyButton} onPress={() => addToCart(item)}>
-          <Text style={styles.buyButtonText}>Buy</Text>
-        </TouchableOpacity>
-      </View>
+        <View style={styles.productActions}>
+          <Text style={styles.productPrice}>{item.price}</Text>
+          <TouchableOpacity style={styles.buyButton} onPress={() => addToCart(item)}>
+            <Text style={styles.buyButtonText}>Buy</Text>
+          </TouchableOpacity>
+        </View>
+    </TouchableOpacity>
     </View>
   );
 

@@ -23,6 +23,7 @@ export default function RegisterScreen({ navigation }) {
   }, []);
 
   const handleSignUp = async () => {
+    console.log("done");
     setError('');
 
     if (password !== confirmPassword) {
@@ -42,7 +43,7 @@ export default function RegisterScreen({ navigation }) {
     } catch (error) {
       alert('Đăng ký thất bại. Vui lòng thử lại.');
     }
-  };
+  }
 
   return (
     <Center flex={1}>

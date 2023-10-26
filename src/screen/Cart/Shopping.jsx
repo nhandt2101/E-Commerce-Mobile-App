@@ -15,13 +15,13 @@ export default function ShoppingCartScreen({ navigation }) {
         fetchData();
     }, []);
 
-    useEffect(() => {
-        console.log("Product updated:", product);
-    }, [product]);
+    // useEffect(() => {
+    //     console.log("Product updated:", product);
+    // }, [product]);
 
-    useEffect(() => {
-        console.log("User updated:", user);
-    }, [user]);
+    // useEffect(() => {
+    //     console.log("User updated:", user);
+    // }, [user]);
 
     const fetchData = async () => {
         try {
