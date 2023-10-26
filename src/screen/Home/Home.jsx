@@ -12,32 +12,27 @@ export default function HomeScreen({ navigation }) {
   const [products, setProducts] = useState([]);
   const [txt, setTxt] = useState("Loadding...");
 
-  const getProductsFromDatabase = async () => {
-    try {
-      const productData = await getAllProduct();
-      setProducts(productData);
-    } catch (error) {
-      console.error("Error fetching products from the database:", error);
-      setTxt("Khong tim thay san pham");
-      setProducts([]);
-    }
-  };
+  // const getProductsFromDatabase = async () => {
+  //   try {
+  //     const productData = await getAllProduct();
+  //     setProducts(productData);
+  //   } catch (error) {
+  //     console.error("Error fetching products from the database:", error);
+  //     setTxt("Khong tim thay san pham");
+  //     setProducts([]);
+  //   }
+  // };
 
   const onSubmitSearch = async () => {
-    console.log(query);
-
-    if (query == null || query == "" || query == undefined) {
-      query = ' '
-    }
+    // console.log(query);
 
     try {
       const data = await findProductTrue(query);
       setProducts([...data]);
-      console.log(products)
+      // console.log(products)
     } catch (e) {
       console.log(e);
       setProducts([]);
-
     }
   }
 
@@ -49,11 +44,7 @@ export default function HomeScreen({ navigation }) {
   //       console.error("Error dropping table:", error);
   //     });
 
-  //   createTableProduct();
-  //   for (let i = 0; i < data.length; ++i) {
-  //     insertProduct(data[i].name, data[i].price, data[i].describe, data[i].link_img, 0)
-  //     console.log(data[i]['sale_id']);
-  //   }
+    
   // };
 
   const getNumColumns = () => {
@@ -65,6 +56,7 @@ export default function HomeScreen({ navigation }) {
 
   useEffect(() => {
     onSubmitSearch();
+    // getProductsFromDatabase();
   }, [])
 
   const addToCart = async (product) => {

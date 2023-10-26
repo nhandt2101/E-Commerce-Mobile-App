@@ -66,6 +66,7 @@ const getAllProduct = () => {
             for (let i = 0; i < result.rows.length; i++) {
               const productData = result.rows.item(i);
               products.push({
+                id: productData.id,
                 productName: productData.name,
                 describe: productData.describe,
                 link_img: productData.link_img,
