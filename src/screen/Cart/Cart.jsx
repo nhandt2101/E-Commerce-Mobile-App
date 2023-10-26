@@ -2,49 +2,84 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from "react-native";
 import Navigator from "../../component/navigative";
 
-import { createTableCart, dropTableCart, getCart } from "../../db/cart";
+import { getCart, deleteCart } from "../../db/cart";
 
 export default function CartScreen({ navigation }) {
     const [products, setProducts] = useState(null);
+    const [selectedProducts, setSelectedProducts] = useState([]);
+    const [selectAll, setSelectAll] = useState(false);
 
     useEffect(() => {
-        createTableCart();
         fetchData();
     }, []);
-
-    // useEffect(() => {
-    //     console.log("Product updated:", products);
-    // }, [products]);
 
     const fetchData = async () => {
         try {
             const data = await getCart();
-            console.log(data)
             setProducts(data);
         } catch (error) {
             console.error("Error retrieving data:", error);
         }
     };
 
+    const deleteItem = async (item) => {
+        try {
+            await deleteCart(item.id);
+        } catch (e) {
+            console.log("error");
+        }
+    }
+
+    const toggleProductSelection = (item) => {
+        const updatedProducts = products.map((product) => {
+            if (product.id === item.id) {
+                return {
+                    ...product,
+                    isSelect: !product.isSelect,
+                };
+            }
+            return product;
+        });
+
+        setProducts(updatedProducts);
+    };
+
+    const toggleSelectAll = () => {
+        setSelectAll(true);
+    };
+
     const renderItem = ({ item }) => (
         <View style={styles.productItem}>
-            <View style={styles.productActions}>
-                <Image source={{ uri: item.link_img }} style={styles.productImage} />
-                <View style={styles.productInfo}>
-                    <Text style={styles.productName}>{item.productName}</Text>
-                    <Text style={styles.productDescription} numberOfLines={1}>
-                        {item.describe}
-                    </Text>
-                    <Text style={styles.productPrice}>{item.price}</Text>
-                    <View style={styles.productRow}>
-                        
-                        <Text style={styles.quantityText}>Quantity: {item.quantity}</Text>
-                        <TouchableOpacity style={styles.buyButton} onPress={() => console.log(item)}>
-                            <Text style={styles.buyButtonText}>Buy</Text>
+            <View style={styles.productItem}>
+                <View style={styles.productActions}>
+
+                    <View style={styles.productActions}>
+                        <TouchableOpacity onPress={() => toggleProductSelection(item)}>
+                            <View
+                                style={[
+                                    styles.checkbox,
+                                    item.isSelect ? styles.checkboxSelected : null,
+                                ]}
+                            />
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.deleteButton} onPress={() => console.log(item)}>
-                            <Text style={styles.deleteButtonText}>Delete</Text>
-                        </TouchableOpacity>
+                        <Image source={{ uri: item.link_img }} style={styles.productImage} />
+                        <View style={styles.productInfo}>
+                            <Text style={styles.productName}>{item.productName}</Text>
+                            <Text style={styles.productDescription} numberOfLines={1}>
+                                {item.describe}
+                            </Text>
+                            <Text style={styles.productPrice}>{item.price}</Text>
+                            <View style={styles.productRow}>
+
+                                <Text style={styles.quantityText}>Quantity: {item.quantity}</Text>
+                                <TouchableOpacity style={styles.buyButton} onPress={() => console.log(item)}>
+                                    <Text style={styles.buyButtonText}>Buy</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.deleteButton} onPress={() => deleteItem(item)}>
+                                    <Text style={styles.deleteButtonText}>Delete</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -53,6 +88,15 @@ export default function CartScreen({ navigation }) {
 
     return (
         <View style={styles.container}>
+            <TouchableOpacity onPress={() => toggleSelectAll()}>
+                <View
+                    style={[
+                        styles.checkbox,
+                        selectAll ? styles.checkboxSelected : null,
+                    ]}
+                />
+                {selectAll?<Text>Bỏ chọn tất cả</Text>:<Text>Chọn tất cả</Text>}
+            </TouchableOpacity>
             <FlatList
                 data={products}
                 renderItem={renderItem}
@@ -127,5 +171,38 @@ const styles = StyleSheet.create({
     deleteButtonText: {
         color: "white",
         fontWeight: "bold",
-    }
+    },
+    checkbox: {
+        width: 20,
+        height: 20,
+        borderWidth: 2,
+        borderColor: "black",
+        marginRight: 10,
+    },
+    checkboxSelected: {
+        backgroundColor: "black",
+    },
+    selectAllButton: {
+        backgroundColor: "blue",
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+        marginBottom: 10,
+    },
+    selectAllButtonText: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center",
+    },
+    deleteSelectedButton: {
+        backgroundColor: "red",
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+    },
+    deleteSelectedButtonText: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center",
+    },
 });

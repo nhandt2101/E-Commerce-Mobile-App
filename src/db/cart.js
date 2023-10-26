@@ -75,6 +75,7 @@ const getCart = () => {
                 price: productData.price,
                 sale_id: productData.sale_id,
                 quantity: productData.quantity,
+                isSelect: false,
               });
             }
             resolve(products);
@@ -84,6 +85,28 @@ const getCart = () => {
         },
         (_, error) => {
           console.error('Error querying products:', error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+const deleteCart = (id) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'DELETE FROM cart WHERE id = ?',
+        [id],
+        (_, result) => {
+          if (result.rowsAffected > 0) {
+            resolve(result);
+          } else {
+            reject(new Error('Insertion failed'));
+          }
+        },
+        (_, error) => {
+          console.error('Error inserting user:', error);
           reject(error);
         }
       );
@@ -111,4 +134,4 @@ const dropTableCart = () => {
   });
 };
 
-export { createTableCart, insertCart, getCart, dropTableCart };
+export { createTableCart, insertCart, getCart, deleteCart, dropTableCart };

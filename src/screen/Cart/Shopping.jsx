@@ -33,20 +33,16 @@ export default function ShoppingCartScreen({ navigation }) {
         }
     };
 
-    const addToCart = (item) => {
-        const { describe, link_img, price, productName, sale_id } = item;
-        insertToCart(describe, link_img, price, productName, sale_id, user.id, quantity);
-    };
-
-    const insertToCart = async (describe, link_img, price, productName, sale_id, user_id, quantity) => {
+    const addToCart = async (item) => {
         try {
-            await insertCart(productName, price, describe, link_img, quantity, sale_id, user_id);
-            console.log("done");
-        } catch (error) {
+            const { describe, link_img, price, productName, sale_id } = item;
+            insertCart(productName, price, describe, link_img, quantity,  sale_id, user.id );
+            alert("done");
+        } catch (e) {
             alert('Vui lòng thử lại.');
-            console.log(error);
+            console.log(e);
         }
-    }
+    };
 
     const renderItem = ({ item }) => (
         <TouchableOpacity style={styles.productItem} onPress={() => {
