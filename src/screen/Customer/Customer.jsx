@@ -1,7 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, Button } from 'react-native';
 
+import { getData } from "../../component/store";
+
 const Customer = () => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    console.log("User updated:", user);
+  }, [user]);
+
+  const fetchData = async () => {
+    try {
+      const data_user = await getData("@user");
+      setUser(data_user);
+    } catch (error) {
+      console.error("Error retrieving data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.userInfo}>

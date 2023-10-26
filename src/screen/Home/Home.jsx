@@ -2,16 +2,15 @@ import React, { useState, useEffect } from "react";
 import { View, StyleSheet, TouchableOpacity, Text, FlatList, Image, Dimensions, TextInput } from "react-native";
 
 import Navigator from "../../component/navigative";
-import { createTableProduct, dropTableProduct, getAllProduct, insertProduct } from '../../db/product';
-
+import { createTableProduct, dropTableProduct, getAllProduct, insertProduct, findProduct, findProductTrue } from '../../db/product';
 import data from "../../db/products.json";
 import { getData, storeData } from "../../component/store";
 
 export default function HomeScreen({ navigation }) {
 
   const [query, setQuery] = useState("");
-  const [activeSearch, setActiveSearch] = useState(false);
   const [products, setProducts] = useState([]);
+  const [txt, setTxt] = useState("Loadding...");
 
   const getProductsFromDatabase = async () => {
     try {
@@ -19,27 +18,43 @@ export default function HomeScreen({ navigation }) {
       setProducts(productData);
     } catch (error) {
       console.error("Error fetching products from the database:", error);
+      setTxt("Khong tim thay san pham");
+      setProducts([]);
     }
   };
 
-  const onSubmitSearch = () => {
-    console.log(products);
+  const onSubmitSearch = async () => {
+    console.log(query);
+
+    if (query == null || query == "" || query == undefined) {
+      query = ' '
+    }
+
+    try {
+      const data = await findProductTrue(query);
+      setProducts([...data]);
+      console.log(products)
+    } catch (e) {
+      console.log(e);
+      setProducts([]);
+
+    }
   }
 
-  const taodb = () => {
-    dropTableProduct()
-      .then(() => {
-      })
-      .catch((error) => {
-        console.error("Error dropping table:", error);
-      });
+  // const taodb = () => {
+  //   dropTableProduct()
+  //     .then(() => {
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error dropping table:", error);
+  //     });
 
-    createTableProduct();
-    for (let i = 0; i < data.length; ++i) {
-      insertProduct(data[i].name, data[i].price, data[i].describe, data[i].link_img, 0)
-      console.log(data[i]['sale_id']);
-    }
-  };
+  //   createTableProduct();
+  //   for (let i = 0; i < data.length; ++i) {
+  //     insertProduct(data[i].name, data[i].price, data[i].describe, data[i].link_img, 0)
+  //     console.log(data[i]['sale_id']);
+  //   }
+  // };
 
   const getNumColumns = () => {
     const screenWidth = Dimensions.get("window").width;
@@ -49,7 +64,7 @@ export default function HomeScreen({ navigation }) {
   const [numColumns, setNumColumns] = useState(getNumColumns());
 
   useEffect(() => {
-    getProductsFromDatabase();
+    onSubmitSearch();
   }, [])
 
   const addToCart = async (product) => {
@@ -95,13 +110,25 @@ export default function HomeScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <FlatList
+      {/* <FlatList
         data={products}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         numColumns={numColumns}
         contentContainerStyle={styles.productList}
-      />
+      /> */}
+
+      {products.length === 0 ? (
+        <Text>{txt}</Text>
+      ) : (
+        <FlatList
+          data={products}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          numColumns={numColumns}
+          contentContainerStyle={styles.productList}
+        />
+      )}
 
       <Navigator></Navigator>
     </View>

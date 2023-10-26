@@ -36,7 +36,7 @@ export default function CartScreen({ navigation }) {
                         {item.describe}
                     </Text>
                     <Text style={styles.productPrice}>{item.price}</Text>
-                    <TouchableOpacity style={styles.buyButton} onPress={() => addToCart(item)}>
+                    <TouchableOpacity style={styles.buyButton} onPress={() => console.log(item)}>
                         <Text style={styles.buyButtonText}>Buy</Text>
                     </TouchableOpacity>
                 </View>

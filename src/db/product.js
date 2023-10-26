@@ -87,6 +87,40 @@ const getAllProduct = () => {
   });
 };
 
+const findProductTrue = (input) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'SELECT * FROM products WHERE name LIKE ? OR describe LIKE ?',
+        [`%${input}%`, `%${input}%`],
+        (_, result) => {
+          if (result.rows.length > 0) {
+            const products = [];
+            for (let i = 0; i < result.rows.length; i++) {
+              const productData = result.rows.item(i);
+              products.push({
+                id: productData.id,
+                productName: productData.name,
+                describe: productData.describe,
+                link_img: productData.link_img,
+                price: productData.price,
+                sale_id: productData.sale_id,
+              });
+            }
+            resolve(products);
+          } else {
+            reject(new Error('No products found.'));
+          }
+        },
+        (_, error) => {
+          console.error('Error querying products:', error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
 const minDistance = 3;
 
 const findProduct = (input) => {
@@ -150,4 +184,4 @@ const dropTableProduct = () => {
   });
 };
 
-export { createTableProduct, insertProduct, getAllProduct, findProduct, dropTableProduct };
+export { createTableProduct, insertProduct, getAllProduct, findProductTrue, findProduct, dropTableProduct };

@@ -11,9 +11,12 @@ const createTableCart = () => {
           link_img TEXT NOT NULL,
           name TEXT DEFAULT 'Product name',
           sale_id INT NOT NULL,
+          user_id INT NOT NULL,
           price DOUBLE NOT NULL DEFAULT 10.0,
           describe TEXT DEFAULT 'abc abc abc',
-          FOREIGN KEY(sale_id) REFERENCES users(id)
+          quantity INT NOT NULL,
+          FOREIGN KEY (sale_id) REFERENCES users(id),
+          FOREIGN KEY (user_id) REFERENCES users(id)
         );`,
         [],
         (_, result) => {
@@ -31,15 +34,15 @@ const createTableCart = () => {
 };
 
 
-const insertCart = (name, price, describe, link_img, sale_id) => {
+const insertCart = (name, price, describe, link_img, quantity, sale_id, user_id) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        'INSERT INTO cart (name, price, describe, link_img, sale_id) VALUES (?, ?, ?, ?, ?)',
-        [name, price, describe, link_img, sale_id],
+        'INSERT INTO cart (name, price, describe, link_img, quantity, sale_id, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [name, price, describe, link_img, quantity, sale_id, user_id],
         (_, result) => {
           if (result.rowsAffected > 0) {
-            resolve();
+            resolve(result);
           } else {
             reject(new Error('Insertion failed'));
           }
@@ -70,6 +73,7 @@ const getCart = () => {
                 link_img: productData.link_img,
                 price: productData.price,
                 sale_id: productData.sale_id,
+                quantity: productData.quantity,
               });
             }
             resolve(products);
@@ -106,4 +110,4 @@ const dropTableCart = () => {
   });
 };
 
-export { createTableCart, insertCart, getCart, dropTableCart};
+export { createTableCart, insertCart, getCart, dropTableCart };
