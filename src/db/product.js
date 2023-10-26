@@ -177,7 +177,7 @@ function levenshtein(s1, s2) {
   return c;
 }
 
-const findProduct = (input) => {
+const findProduct = (input, maxDistance) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
@@ -198,7 +198,7 @@ const findProduct = (input) => {
 
               const distance = Math.min(levenshtein(input, productName), levenshtein(input, productDescription))
 
-              if (distance < 3) {
+              if (distance < maxDistance) {
                 closestProducts.push({
                   id: productData.id,
                   productName: productData.name,
@@ -206,7 +206,7 @@ const findProduct = (input) => {
                   link_img: productData.link_img,
                   price: productData.price,
                   sale_id: productData.sale_id,
-
+                  distance: distance
                 })
               }
             }
@@ -229,7 +229,7 @@ const findProduct = (input) => {
 
 const findProductCombined = (input) => {
   const findProductTruePromise = findProductTrue(input).catch(() => null);
-  const findProductPromise = findProduct(input).catch(() => []);
+  const findProductPromise = findProduct(input, 5).catch(() => []);
 
   return Promise.all([findProductTruePromise, findProductPromise]).then(([trueProduct, similarProducts]) => {
     if (trueProduct) {
@@ -237,6 +237,40 @@ const findProductCombined = (input) => {
     } else {
       return similarProducts.slice(0, 10);
     }
+  });
+};
+
+const getBySale = (input) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'SELECT * FROM products WHERE sale_id = ?',
+        [input],
+        (_, result) => {
+          if (result.rows.length > 0) {
+            const products = [];
+            for (let i = 0; i < result.rows.length; i++) {
+              const productData = result.rows.item(i);
+              products.push({
+                id: productData.id,
+                productName: productData.name,
+                describe: productData.describe,
+                link_img: productData.link_img,
+                price: productData.price,
+                sale_id: productData.sale_id,
+              });
+            }
+            resolve(products);
+          } else {
+            reject(new Error('No products found.'));
+          }
+        },
+        (_, error) => {
+          console.error('Error querying products:', error);
+          reject(error);
+        }
+      );
+    });
   });
 };
 
@@ -260,4 +294,4 @@ const dropTableProduct = () => {
   });
 };
 
-export { createTableProduct, insertProduct, getAllProduct, findProductTrue, findProduct, findProductCombined, dropTableProduct };
+export { createTableProduct, insertProduct, getAllProduct, findProductTrue, findProduct, findProductCombined, getBySale, dropTableProduct };
