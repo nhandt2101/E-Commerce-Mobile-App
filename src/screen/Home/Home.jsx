@@ -54,17 +54,24 @@ export default function HomeScreen({ navigation }) {
 
   };
 
+  const productDetails = async (product) => {
+    try {
+      storeData("@product", product);
+      navigation.navigate('ProductDetails');
+    } catch (error) {
+      console.error("Error store data:", error);
+    }
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.productItem}>
-      <TouchableOpacity onPress={() => addToCart(item)}>
+      <TouchableOpacity onPress={() => productDetails(item)}>
         <Image source={{ uri: item.link_img }} style={styles.productImage} />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => addToCart(item)}>
         <Text style={styles.productName}>{item.productName}</Text>
+        <Text style={styles.productDescription} numberOfLines={1}>
+          {item.describe.length > 30 ? item.describe.substring(0, 30) + "..." : item.describe}
+        </Text>
       </TouchableOpacity>
-      <Text style={styles.productDescription} numberOfLines={1}>
-        {item.describe.length > 30 ? item.describe.substring(0, 30) + "..." : item.describe}
-      </Text>
       <View style={styles.productActions}>
         <Text style={styles.productPrice}>{item.price}</Text>
         <TouchableOpacity style={styles.buyButton} onPress={() => addToCart(item)}>

@@ -140,12 +140,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginBottom: 20,
     },
-    productImage: {
-        width: 300,
-        height: 300,
-        resizeMode: "cover",
-        marginBottom: 5,
-    },
     productName: {
         fontSize: 18,
         fontWeight: "bold",
