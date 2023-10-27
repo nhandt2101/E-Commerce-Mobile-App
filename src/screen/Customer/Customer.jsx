@@ -1,71 +1,81 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, Button } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import Navigator from '../../component/navigative';
 
 import { getData } from "../../component/store";
+import { FlatList } from 'native-base';
 
-const Customer = () => {
+const Customer = ({ navigation }) => {
   const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    console.log("User updated:", user);
-  }, [user]);
+  const [txt, setTxt] = useState("Loading....");
 
   const fetchData = async () => {
     try {
       const data_user = await getData("@user");
       setUser(data_user);
     } catch (error) {
-      console.error("Error retrieving data:", error);
+      console.error(error);
     }
   };
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [user]);
 
   return (
     <View style={styles.container}>
-      <View style={styles.userInfo}>
-        <Image
-          style={styles.profileImage}
-          source={require("../../image/user.png")}
-        />
-        <View style={styles.textContainer}>
-          <Text style={styles.userName}>John Doe</Text>
-        </View>
-      </View>
-      <Text style={styles.bio}>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-      </Text>
-      <Button
+      {user !== null ? (
+        <>
+          <View style={styles.userInfo}>
+            <Image
+              style={styles.profileImage}
+              source={require("../../image/user.png")}
+            />
+            <View style={styles.userInfoText}>
+              <Text style={styles.infoText}>
+                <Text style={styles.labelText}>Name:</Text> {user.name}
+              </Text>
+              <Text style={styles.infoText}>
+                <Text style={styles.labelText}>Address:</Text> {user.address}
+              </Text>
+              <Text style={styles.infoText}>
+                <Text style={styles.labelText}>Email:</Text> {user.email}
+              </Text>
+              <Text style={styles.infoText}>
+                <Text style={styles.labelText}>Age:</Text> {user.age}
+              </Text>
+            </View>
+          </View>
+          <TouchableOpacity
+            style={[styles.editButton, styles.section]}
+            onPress={() => console.log("Sửa thông tin")}
+          >
+            <Text style={styles.editButtonText}>Sửa thông tin</Text>
+          </TouchableOpacity>
+          <View style={styles.section}>
+            <TouchableOpacity
+              style={styles.sectionButton}
+              onPress={() => console.log("Theo dõi đơn hàng")}
+            >
+              <Text style={styles.sectionButtonText}>Theo dõi đơn hàng</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.section}>
+            <TouchableOpacity
+              style={styles.sectionButton}
+              onPress={() => console.log("Các sản phẩm đã mua")}
+            >
+              <Text style={styles.sectionButtonText}>Các sản phẩm đã mua</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      ) : (
+        <Text style={styles.loadingText}>{txt}</Text>
+      )}
+      <FlatList />
 
-        title="Information"
-        color="#841584"
-        accessibilityLabel="Learn more about this purple button"
-      />
-
-      <Button
-
-        title="Information"
-        color="#841584"
-        accessibilityLabel="Learn more about this purple button"
-      />
-
-      <Button
-
-        title="Information"
-        color="#841584"
-        accessibilityLabel="Learn more about this purple button"
-      />
-
-      <Button
-
-        title="Information"
-        color="#841584"
-        accessibilityLabel="Learn more about this purple button"
-      />
+      <Navigator />
     </View>
-
   );
 };
 
@@ -78,25 +88,58 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: 20,
+    marginBottom: 20,
   },
   profileImage: {
     width: 50,
     height: 50,
-    borderRadius: 75,
+    borderRadius: 25,
     marginRight: 20,
   },
-  textContainer: {
+  userInfoText: {
     flex: 1,
   },
-  userName: {
-    fontSize: 24,
+  section: {
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 30,
     fontWeight: 'bold',
     marginBottom: 10,
   },
-  bio: {
+  infoText: {
     fontSize: 16,
+    marginBottom: 5,
+  },
+  editButton: {
+    backgroundColor: 'red',
+    padding: 10,
+    borderRadius: 5,
+    alignSelf: 'center',
+  },
+  editButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  sectionButton: {
+    backgroundColor: '#ebebeb',
+    padding: 10,
+    borderRadius: 5,
+  },
+  sectionButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
     textAlign: 'center',
   },
+  loadingText: {
+    textAlign: 'center',
+    fontSize: 18,
+  },
+  labelText: {
+    fontWeight: 'bold',
+  }
 });
 
 export default Customer;

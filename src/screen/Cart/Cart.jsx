@@ -6,8 +6,8 @@ import { getCart, deleteCart } from "../../db/cart";
 
 export default function CartScreen({ navigation }) {
     const [products, setProducts] = useState(null);
-    const [selectedProducts, setSelectedProducts] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
+    const [totalPrice, setTotalPrice] = useState("0đ");
 
     useEffect(() => {
         fetchData();
@@ -20,6 +20,25 @@ export default function CartScreen({ navigation }) {
         } catch (error) {
             console.error("Error retrieving data:", error);
         }
+    };
+
+    const calculateTotalPrice = (updatedProducts) => {
+        let total = 0;
+
+        for (let i = 0; i < updatedProducts.length; ++i) {
+            if (updatedProducts[i].isSelect) {
+                const priceString = updatedProducts[i].price.replace(/[^0-9]/g, "");
+                const price = parseInt(priceString);
+                total += price * updatedProducts[i].quantity;
+                console.log(price);
+            }
+        }
+
+        const formattedTotal = total.toLocaleString("vi-VN");
+        const displayTotal = formattedTotal + "đ";
+        console.log(displayTotal);
+
+        setTotalPrice(displayTotal);
     };
 
     const deleteItem = async (item) => {
@@ -41,18 +60,53 @@ export default function CartScreen({ navigation }) {
             return product;
         });
 
+        let dem = 0;
+        updatedProducts.map((product) => {
+            dem += product.isSelect;
+        })
+
+        if (dem == products.length) {
+            setSelectAll(true);
+        } else {
+            setSelectAll(false);
+        }
+
         setProducts(updatedProducts);
+        calculateTotalPrice(updatedProducts);
     };
 
     const toggleSelectAll = () => {
-        setSelectAll(true);
+        let x = !selectAll
+        setSelectAll(x);
+
+        const updatedProducts = products.map((product) => {
+            return {
+                ...product,
+                isSelect: x,
+            };
+        });
+
+        setProducts(updatedProducts);
+        calculateTotalPrice(updatedProducts);
     };
+
+    const deleteProducts = async () => {
+        let updatedProducts = []
+        for (let i = 0; i < products.length; ++i) {
+            if (products[i].isSelect) {
+                await deleteItem(products[i]);
+            } else {
+                updatedProducts.push(products[i]);
+            }
+        }
+
+        setProducts(updatedProducts);
+    }
 
     const renderItem = ({ item }) => (
         <View style={styles.productItem}>
             <View style={styles.productItem}>
                 <View style={styles.productActions}>
-
                     <View style={styles.productActions}>
                         <TouchableOpacity onPress={() => toggleProductSelection(item)}>
                             <View
@@ -70,7 +124,6 @@ export default function CartScreen({ navigation }) {
                             </Text>
                             <Text style={styles.productPrice}>{item.price}</Text>
                             <View style={styles.productRow}>
-
                                 <Text style={styles.quantityText}>Quantity: {item.quantity}</Text>
                                 <TouchableOpacity style={styles.buyButton} onPress={() => console.log(item)}>
                                     <Text style={styles.buyButtonText}>Buy</Text>
@@ -88,20 +141,37 @@ export default function CartScreen({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity onPress={() => toggleSelectAll()}>
-                <View
-                    style={[
-                        styles.checkbox,
-                        selectAll ? styles.checkboxSelected : null,
-                    ]}
-                />
-                {selectAll?<Text>Bỏ chọn tất cả</Text>:<Text>Chọn tất cả</Text>}
-            </TouchableOpacity>
+
+            <View style={styles.selectAllRow}>
+                <TouchableOpacity onPress={() => toggleSelectAll()} style={styles.selectAllContainer}>
+                    <View
+                        style={[
+                            styles.checkbox,
+                            selectAll ? styles.checkboxSelected : null,
+                        ]}
+                    />
+                    {selectAll ? <Text style={styles.selectAllText}>Bỏ chọn tất cả</Text> : <Text style={styles.selectAllText}>Chọn tất cả</Text>}
+                </TouchableOpacity>
+                <View style={styles.actionsContainer}>
+                    <View style={styles.productRow}>
+                        <TouchableOpacity style={styles.buyButton} onPress={() => console.log("Not things")}>
+                            <Text style={styles.buyButtonText}>Buy</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.deleteButton} onPress={() => deleteProducts()}>
+                            <Text style={styles.deleteButtonText}>Delete</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
             <FlatList
                 data={products}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
             />
+
+            <View style={styles.totalPriceContainer}>
+                <Text style={styles.totalPriceText}>Total Price: {totalPrice}</Text>
+            </View>
             <Navigator></Navigator>
         </View>
     );
@@ -182,6 +252,7 @@ const styles = StyleSheet.create({
     checkboxSelected: {
         backgroundColor: "black",
     },
+
     selectAllButton: {
         backgroundColor: "blue",
         paddingVertical: 10,
@@ -204,5 +275,37 @@ const styles = StyleSheet.create({
         color: "white",
         fontWeight: "bold",
         textAlign: "center",
+    },
+    selectAllContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 5,
+    },
+    totalPriceContainer: {
+        flexDirection: "row",
+        justifyContent: "flex-end",
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+    },
+    totalPriceText: {
+        fontSize: 18,
+        fontWeight: "bold",
+    },
+    selectAllRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 5,
+        justifyContent: "space-between",
+    },
+    selectAllContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    selectAllText: {
+        marginLeft: 10,
+    },
+    actionsContainer: {
+        flexDirection: "row",
+        alignItems: "center",
     },
 });
