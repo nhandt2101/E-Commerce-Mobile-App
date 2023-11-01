@@ -90,8 +90,6 @@ const getAllProduct = () => {
   });
 };
 
-
-
 const findProductTrue = (input) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
@@ -262,11 +260,31 @@ const getBySale = (input) => {
             }
             resolve(products);
           } else {
-            reject(new Error('No products found.'));
+            resolve([]);
           }
         },
         (_, error) => {
           console.error('Error querying products:', error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+const deleteProduct = (input) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'SELECT * FROM products WHERE id = ?',
+        [input],
+        (_, result) => {
+          // TODO
+          resolve();
+        },
+        (_, error) => {
+          console.error('Error creating database:', error);
+          // TODO
           reject(error);
         }
       );
@@ -294,4 +312,4 @@ const dropTableProduct = () => {
   });
 };
 
-export { createTableProduct, insertProduct, getAllProduct, findProductTrue, findProduct, findProductCombined, getBySale, dropTableProduct };
+export { createTableProduct, insertProduct, getAllProduct, findProductTrue, findProduct, findProductCombined, getBySale, deleteProduct, dropTableProduct };

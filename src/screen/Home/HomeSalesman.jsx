@@ -1,36 +1,101 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, TextInput, TouchableOpacity, FlatList } from "react-native";
+import { Image } from "react-native";
 
 import Navigator from "../../component/navigative";
+import { getBySale, deleteProduct, insertProduct } from "../../db/product";
+import { getData } from "../../component/store";
 
 const SellerScreen = ({ navigation }) => {
-  const [products, setProducts] = useState([
-    { id: "1", name: "Product 1", price: "$10.99" },
-    { id: "2", name: "Product 2", price: "$15.99" },
-    // ... thêm các sản phẩm khác nếu cần
-  ]);
+  const [products, setProducts] = useState([]);
+  const [user, setUser] = useState(null);
+  const [newProduct, setNewProduct] = useState({ productName: "", price: "", describe: "", link_img: "" });
 
-  const [newProduct, setNewProduct] = useState({ name: "", price: "" });
+  useEffect(() => {
+    fetchData();
+  }, [products]);
 
-  const handleAddProduct = () => {
-    if (newProduct.name && newProduct.price) {
-      setProducts([...products, { id: String(products.length + 1), ...newProduct }]);
-      setNewProduct({ name: "", price: "" });
+  useEffect(() => {
+    getuser();
+  }, [user]);
+
+  const getuser = async () => {
+    try {
+      let data = await getData("@user");
+      setUser(data);
+    } catch (error) {
+      console.error("Error retrieving data:", error);
     }
   };
 
-  const handleDeleteProduct = (productId) => {
-    const updatedProducts = products.filter((product) => product.id !== productId);
-    setProducts(updatedProducts);
+  const fetchData = async () => {
+    if (user == null) {
+      return;
+    }
+    try {
+      console.log(user.id);
+      let data = await getBySale(user.id);
+      setProducts(data);
+    } catch (error) {
+      console.error("Error retrieving data:", error);
+    }
+  };
+
+  const handleAddProduct = async () => {
+    if (newProduct.name && newProduct.price) {
+      try {
+        await insertProduct(newProduct.productName, newProduct.price, newProduct.describe, newProduct.link_img, user.id)
+        setNewProduct({ productName: "", price: "", describe: "", link_img: "" });
+
+        alert("done");
+      } catch (error) {
+        console.error("Error retrieving data:", error);
+        alert("error");
+      }
+    }
+  };
+
+  const handleDeleteProduct = async (productId) => {
+    try {
+      await deleteProduct(productId.id);
+
+      alert("done");
+    } catch (error) {
+      console.error("Error retrieving data:", error);
+      alert("error");
+    }
   };
 
   const renderItem = ({ item }) => (
     <View style={styles.productItem}>
-      <Text style={styles.productName}>{item.name}</Text>
-      <Text style={styles.productPrice}>{item.price}</Text>
-      <TouchableOpacity onPress={() => handleDeleteProduct(item.id)}>
-        <Text style={styles.deleteButton}>Delete</Text>
-      </TouchableOpacity>
+      <View style={styles.productItem}>
+        <View style={styles.productActions}>
+          <View style={styles.productActions}>
+            <TouchableOpacity>
+              <View
+                style={[
+                  styles.checkbox,
+                  item.isSelect ? styles.checkboxSelected : null,
+                ]}
+              />
+            </TouchableOpacity>
+            <Image source={{ uri: item.link_img }} style={styles.productImage} />
+            <View style={styles.productInfo}>
+              <Text style={styles.productName}>{item.productName}</Text>
+              <Text style={styles.productDescription} numberOfLines={1}>
+                {item.describe}
+              </Text>
+              <Text style={styles.productPrice}>{item.price}</Text>
+              <View style={styles.productRow}>
+                <Text style={styles.quantityText}>Quantity: {item.quantity}</Text>
+                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteProduct(item)}>
+                  <Text style={styles.deleteButtonText}>Delete</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      </View>
     </View>
   );
 
@@ -40,8 +105,20 @@ const SellerScreen = ({ navigation }) => {
         <TextInput
           style={styles.input}
           placeholder="Product Name"
-          value={newProduct.name}
-          onChangeText={(text) => setNewProduct({ ...newProduct, name: text })}
+          value={newProduct.productName}
+          onChangeText={(text) => setNewProduct({ ...newProduct, productName: text })}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Description"
+          value={newProduct.describe}
+          onChangeText={(text) => setNewProduct({ ...newProduct, describe: text })}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Link image"
+          value={newProduct.link_img}
+          onChangeText={(text) => setNewProduct({ ...newProduct, link_img: text })}
         />
         <TextInput
           style={styles.input}
@@ -53,14 +130,21 @@ const SellerScreen = ({ navigation }) => {
           <Text style={styles.addButtonText}>Add Product</Text>
         </TouchableOpacity>
       </View>
-
-      <FlatList
-        data={products}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        style={styles.productList}
-      />
-
+      {products.length === 0 ? (
+        <>
+          <FlatList />
+          <Text></Text>
+        </>
+      ) : (
+        <>
+          <FlatList
+            data={products}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            style={styles.productList}
+          />
+        </>
+      )}
       <Navigator></Navigator>
     </View>
   );
