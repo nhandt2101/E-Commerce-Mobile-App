@@ -18,6 +18,19 @@ export default function ShoppingCartScreen({ navigation }) {
         fetchData();
     }, [product]);
 
+    useEffect(() => {
+        getuser();
+    }, [user]);
+
+    const getuser = async () => {
+        try {
+            const data_user = await getData("@user");
+            setUser(data_user);
+        } catch (error) {
+            console.error("Error retrieving data:", error);
+        }
+    }
+
     const fetchData = async () => {
         try {
             const data = await getData("@product");
@@ -37,6 +50,7 @@ export default function ShoppingCartScreen({ navigation }) {
         try {
             const { describe, link_img, price, productName, sale_id } = item;
             insertCart(productName, price, describe, link_img, quantity,  sale_id, user.id );
+            
             alert("done");
         } catch (e) {
             alert('Vui lòng thử lại.');

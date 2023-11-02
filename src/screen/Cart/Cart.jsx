@@ -3,23 +3,42 @@ import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from "react
 import Navigator from "../../component/navigative";
 
 import { getCart, deleteCart } from "../../db/cart";
+import { getData, storeData } from "../../component/store";
 
 export default function CartScreen({ navigation }) {
     const [products, setProducts] = useState(null);
     const [selectAll, setSelectAll] = useState(false);
     const [totalPrice, setTotalPrice] = useState("0đ");
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
         fetchData();
     }, []);
 
-    const fetchData = async () => {
+    useEffect(() => {
+        getuser();
+    }, [user]);
+
+    const getuser = async () => {
         try {
-            const data = await getCart();
-            setProducts(data);
+            const data_user = await getData("@user");
+            setUser(data_user);
         } catch (error) {
             console.error("Error retrieving data:", error);
         }
+    }
+
+    const fetchData = async () => {
+        if(user != null) {
+            try {
+                console.log(user.id)
+                const data = await getCart(user.id);
+                setProducts(data);
+            } catch (error) {
+                console.error("Error retrieving data:", error);
+            }
+        }
+        
     };
 
     const calculateTotalPrice = (updatedProducts) => {

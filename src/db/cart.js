@@ -56,12 +56,12 @@ const insertCart = (name, price, describe, link_img, quantity, sale_id, user_id)
   });
 };
 
-const getCart = () => {
+const getCart = (input) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        'SELECT * FROM cart',
-        [],
+        'SELECT * FROM cart WHERE user_id = ?',
+        [input],
         (_, result) => {
           if (result.rows.length > 0) {
             const products = [];

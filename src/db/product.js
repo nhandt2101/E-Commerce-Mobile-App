@@ -194,7 +194,8 @@ const findProduct = (input, maxDistance) => {
               const productName = preprocessVietnameseText(productData.name);
               const productDescription = preprocessVietnameseText(productData.describe);
 
-              const distance = Math.min(levenshtein(input, productName), levenshtein(input, productDescription))
+              let distance = Math.min(levenshtein(input, productName), levenshtein(input, productDescription))
+              distance = Math.min(distance, levenshtein(input, productName + productDescription))
 
               if (distance < maxDistance) {
                 closestProducts.push({

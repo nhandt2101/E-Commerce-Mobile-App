@@ -13,11 +13,8 @@ const SellerScreen = ({ navigation }) => {
 
   useEffect(() => {
     fetchData();
-  }, [products]);
-
-  useEffect(() => {
     getuser();
-  }, [user]);
+  }, [products, user]);
 
   const getuser = async () => {
     try {
@@ -33,7 +30,6 @@ const SellerScreen = ({ navigation }) => {
       return;
     }
     try {
-      console.log(user.id);
       let data = await getBySale(user.id);
       setProducts(data);
     } catch (error) {
@@ -42,8 +38,9 @@ const SellerScreen = ({ navigation }) => {
   };
 
   const handleAddProduct = async () => {
-    if (newProduct.name && newProduct.price) {
+    if (newProduct.productName && newProduct.price) {
       try {
+        console.log(newProduct.productName)
         await insertProduct(newProduct.productName, newProduct.price, newProduct.describe, newProduct.link_img, user.id)
         setNewProduct({ productName: "", price: "", describe: "", link_img: "" });
 
@@ -58,7 +55,6 @@ const SellerScreen = ({ navigation }) => {
   const handleDeleteProduct = async (productId) => {
     try {
       await deleteProduct(productId.id);
-
       alert("done");
     } catch (error) {
       console.error("Error retrieving data:", error);
@@ -87,7 +83,6 @@ const SellerScreen = ({ navigation }) => {
               </Text>
               <Text style={styles.productPrice}>{item.price}</Text>
               <View style={styles.productRow}>
-                <Text style={styles.quantityText}>Quantity: {item.quantity}</Text>
                 <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteProduct(item)}>
                   <Text style={styles.deleteButtonText}>Delete</Text>
                 </TouchableOpacity>
@@ -176,26 +171,58 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-  productItem: {
+  productActions: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  productImage: {
+    width: 130,
+    height: 130,
+    resizeMode: "cover",
+    marginRight: 10,
+  },
+  productInfo: {
+    flex: 1,
+    justifyContent: "center",
   },
   productName: {
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  productDescription: {
+    fontSize: 14,
+    color: "gray",
+    marginBottom: 5,
   },
   productPrice: {
     fontSize: 16,
     fontWeight: "bold",
-  },
-  deleteButton: {
-    color: "red",
-    fontWeight: "bold",
+    color: "green",
+    marginRight: 5,
   },
   productList: {
     flex: 1,
+  },
+  productRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 5,
+  },
+  quantityText: {
+    fontSize: 14,
+    marginRight: 10,
+  },
+  deleteButton: {
+    backgroundColor: "red",
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    marginLeft: 10,
+  },
+  deleteButtonText: {
+    color: "white",
+    fontWeight: "bold",
   },
 });
 

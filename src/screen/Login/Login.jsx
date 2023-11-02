@@ -18,13 +18,13 @@ export default function LoginScreen({ navigation }) {
   const handleLogin = async () => {
     try {
       const user = await getUser(email, password);
+      storeData('@user', user);
 
       if (user.isSale === 1) {
         navigation.navigate('HomeSalesman');
       } else {
         navigation.navigate('Home');
       }
-      storeData('@user', user);
     } catch (error) {
       alert('Sai tên đăng nhập hoặc mật khẩu.');
     }
