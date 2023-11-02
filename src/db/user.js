@@ -54,6 +54,26 @@ const insertUser = async (email, password, isSelected) => {
     });
 };
 
+const updateUser = async (id, name, age, email, password, isSale, address) => {
+    return new Promise((resolve, reject) => {
+        db.transaction(
+            async (tx) => {
+                tx.executeSql(
+                    `UPDATE users SET name = ?, age = ?, email = ?, password = ?, isSale = ?, address = ? WHERE id = ?`,
+                    [name, age, email, password, isSale, address, id],
+                    (_, result) => {
+                        resolve(result);
+                    },
+                    (_, error) => {
+                        console.error('Error updating user:', error);
+                        reject(error);
+                    }
+                );
+            }
+        );
+    });
+};
+
 const getUser = async (email, password) => {
     return new Promise((resolve, reject) => {
         db.transaction(
@@ -99,4 +119,4 @@ const dropTableUser = async () => {
     });
 };
 
-export { createTableUser, insertUser, getUser, dropTableUser };
+export { createTableUser, insertUser, updateUser, getUser, dropTableUser };

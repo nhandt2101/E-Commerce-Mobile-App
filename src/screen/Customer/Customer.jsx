@@ -22,6 +22,10 @@ const Customer = ({ navigation }) => {
     fetchData();
   }, [user]);
 
+  const handleProfile = async () => {
+    navigation.navigate('ChangeProfile');
+  }
+
   return (
     <View style={styles.container}>
       {user !== null ? (
@@ -48,7 +52,7 @@ const Customer = ({ navigation }) => {
           </View>
           <TouchableOpacity
             style={[styles.editButton, styles.section]}
-            onPress={() => console.log("Sửa thông tin")}
+            onPress={() => handleProfile()}
           >
             <Text style={styles.editButtonText}>Sửa thông tin</Text>
           </TouchableOpacity>
@@ -68,6 +72,13 @@ const Customer = ({ navigation }) => {
               <Text style={styles.sectionButtonText}>Các sản phẩm đã mua</Text>
             </TouchableOpacity>
           </View>
+
+          <TouchableOpacity
+            style={[styles.editButton, styles.section]}
+            onPress={() => navigation.navigate('Login')}
+          >
+            <Text style={styles.editButtonText}>Logout</Text>
+          </TouchableOpacity>
         </>
       ) : (
         <Text style={styles.loadingText}>{txt}</Text>

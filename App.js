@@ -11,6 +11,7 @@ import HomeSalesman from './src/screen/Home/HomeSalesman';
 import CartScreen from './src/screen/Cart/Cart';
 import Customer from './src/screen/Customer/Customer';
 import ShoppingCartScreen from './src/screen/Cart/Shopping';
+import ChangeProfile from './src/screen/Customer/ChangeProfile';
 
 const Stack = createStackNavigator();
 
@@ -33,8 +34,10 @@ function App() {
           <Stack.Screen name="Register" component={Register} />
           <Stack.Screen name="HomeSalesman" component={HomeSalesman} />
           <Stack.Screen name="Account" component={Customer} />
+          <Stack.Screen name="ChangeProfile" component={ChangeProfile} />
           <Stack.Screen name="Cart" component={CartScreen} />
           <Stack.Screen name="Shopping" component={ShoppingCartScreen} />
+
         </Stack.Navigator>
       </NativeBaseProvider>
     </NavigationContainer>
