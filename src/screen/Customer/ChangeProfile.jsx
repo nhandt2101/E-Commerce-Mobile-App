@@ -12,6 +12,10 @@ const ChangeProfile = ({ navigation }) => {
     const [newPassword, setNewPassword] = useState(null);
     const [confirmPassword, setConfirmPassword] = useState(null);
 
+    useEffect(() => {
+        fetchData();
+    }, []);
+
     const fetchData = async () => {
         try {
             const data_user = await getData("@user");
@@ -20,10 +24,6 @@ const ChangeProfile = ({ navigation }) => {
             console.error(error);
         }
     };
-
-    useEffect(() => {
-        fetchData();
-    }, []);
 
     const handleSaveProfile = async () => {
         if (newPassword != null) {
@@ -35,22 +35,31 @@ const ChangeProfile = ({ navigation }) => {
                 setError("Mat khau nhap lai khong khop");
                 return;
             }
+
+            try {
+                setUser((prevUser) => ({
+                    ...prevUser,
+                    password: newPassword,
+                }));
+                await updateUser(user.id, user.name, user.age, user.email, newPassword, user.isSale, user.address);
+                await storeData("@user", user);
+                setError(null);
+                alert("Thành công");
+            } catch (error) {
+                console.error("Lỗi khi update hoặc lưu dữ liệu:", error);
+            }
         } else {
-            return;
+            try {
+                await updateUser(user.id, user.name, user.age, user.email, user.password, user.isSale, user.address);
+                await storeData("@user", user);
+                setError(null);
+                alert("Thành công");
+            } catch (error) {
+                console.error("Lỗi khi update hoặc lưu dữ liệu:", error);
+            }
         }
 
-        try {
-            setUser((prevUser) => ({
-                ...prevUser,
-                password: newPassword,
-            }));
-            await updateUser(user.id, user.name, user.age, user.email, newPassword, user.isSale, user.address);
-            await storeData("@user", user);
-            setError(null);
-            alert("Thành công");
-        } catch (error) {
-            console.error("Lỗi khi update hoặc lưu dữ liệu:", error);
-        }
+        
     }
 
     const Changepassword = () => {
