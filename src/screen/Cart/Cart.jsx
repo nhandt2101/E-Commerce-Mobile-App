@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from "react-native";
 import Navigator from "../../component/navigative";
 
-import { getCart, deleteCart } from "../../db/cart";
+import { getCart, deleteCart, createTableCart, dropTableCart } from "../../db/cart";
 import { getData, storeData } from "../../component/store";
 
 export default function CartScreen({ navigation }) {
@@ -13,16 +13,17 @@ export default function CartScreen({ navigation }) {
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [user]);
 
     useEffect(() => {
-        getuser();
+        if(user == null) getuser();
     }, [user]);
 
     const getuser = async () => {
         try {
             const data_user = await getData("@user");
             setUser(data_user);
+            console.log(data_user);
         } catch (error) {
             console.error("Error retrieving data:", error);
         }
@@ -31,14 +32,12 @@ export default function CartScreen({ navigation }) {
     const fetchData = async () => {
         if(user != null) {
             try {
-                console.log(user.id)
                 const data = await getCart(user.id);
                 setProducts(data);
             } catch (error) {
                 console.error("Error retrieving data:", error);
             }
         }
-        
     };
 
     const calculateTotalPrice = (updatedProducts) => {
@@ -49,13 +48,11 @@ export default function CartScreen({ navigation }) {
                 const priceString = updatedProducts[i].price.replace(/[^0-9]/g, "");
                 const price = parseInt(priceString);
                 total += price * updatedProducts[i].quantity;
-                console.log(price);
             }
         }
 
         const formattedTotal = total.toLocaleString("vi-VN");
         const displayTotal = formattedTotal + "đ";
-        console.log(displayTotal);
 
         setTotalPrice(displayTotal);
     };

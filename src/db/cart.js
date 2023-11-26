@@ -10,11 +10,12 @@ const createTableCart = () => {
           id INTEGER PRIMARY KEY NOT NULL,
           link_img TEXT NOT NULL,
           name TEXT DEFAULT 'Product name',
-          sale_id INT NOT NULL,
-          user_id INT NOT NULL,
-          price DOUBLE NOT NULL DEFAULT 10.0,
+          sale_id INTEGER NOT NULL,
+          user_id INTEGER NOT NULL,
+          price REAL NOT NULL DEFAULT 10.0,
           describe TEXT DEFAULT 'abc abc abc',
-          quantity INT NOT NULL,
+          quantity INTEGER NOT NULL,
+          createAt DATETIME DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY (sale_id) REFERENCES users(id),
           FOREIGN KEY (user_id) REFERENCES users(id)
         );`,
@@ -76,6 +77,7 @@ const getCart = (input) => {
                 sale_id: productData.sale_id,
                 quantity: productData.quantity,
                 isSelect: false,
+                createAt: productData.createAt,
               });
             }
             resolve(products);
