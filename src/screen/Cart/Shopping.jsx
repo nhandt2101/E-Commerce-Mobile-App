@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 8,
     },
     buyButton: {
-        backgroundColor: 'blue',
+        backgroundColor: '#ee4d2d',
         paddingHorizontal: 16,
         paddingVertical: 12,
         borderRadius: 4,
@@ -241,6 +241,6 @@ const styles = StyleSheet.create({
     productPrice: {
         fontSize: 14,
         fontWeight: "bold",
-        color: "green",
+        color: "#ee4d2d",
     },
 });

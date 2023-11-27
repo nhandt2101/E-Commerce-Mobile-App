@@ -127,6 +127,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 20,
     marginBottom: 20,
+    padding: 10,
+  backgroundColor: '#fff',
+  borderRadius: 8,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.25,
+  shadowRadius: 3.84,
+  elevation: 5,
   },
   profileImage: {
     width: 50,
@@ -136,6 +144,7 @@ const styles = StyleSheet.create({
   },
   userInfoText: {
     flex: 1,
+    justifyContent: 'center',
   },
   section: {
     marginBottom: 20,
@@ -154,6 +163,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     alignSelf: 'center',
+    marginTop: 20
   },
   editButtonText: {
     fontSize: 16,
