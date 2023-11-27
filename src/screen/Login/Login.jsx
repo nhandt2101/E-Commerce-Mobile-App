@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Center, Box, Heading, VStack, FormControl, Input, Button, HStack, Link, Text } from 'native-base';
-
+import {
+  StyleSheet,
+  View,
+  SafeAreaView,
+  Image,
+  KeyboardAvoidingView,
+  TextInput,
+  Pressable,
+} from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createTableUser, getUser, dropTableUser } from '../../db/user';
 import { storeData } from '../../component/store';
 
@@ -16,62 +28,164 @@ export default function LoginScreen({ navigation }) {
   }, []);
 
   const handleLogin = async () => {
-    try {
-      const user = await getUser(email, password);
-      storeData('@user', user);
+    // try {
+    //   const user = await getUser(email, password);
+    //   storeData('@user', user);
 
-      if (user.isSale === 1) {
-        navigation.navigate('HomeSalesman');
-      } else {
-        navigation.navigate('Home');
-      }
-    } catch (error) {
-      alert('Sai tên đăng nhập hoặc mật khẩu.');
-    }
+    //   if (user.isSale === 1) {
+    //     navigation.navigate('HomeSalesman');
+    //   } else {
+    //     navigation.navigate('Home');
+    //   }
+    // } catch (error) {
+    //   alert('Sai tên đăng nhập hoặc mật khẩu.');
+    // }
+    navigation.navigate('Home');
   };
 
   return (
-    <Center flex={1}>
-      <Box safeArea p={2} w="100%" h="100%" bg="white" rounded="lg" justifyContent="center">
-        <Heading size="lg" color="coolGray.800" _dark={{ color: 'warmGray.50' }} fontWeight="semibold" textAlign="center">
-          Welcome
-        </Heading>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: "white", alignItems: "center"}}
+    >
+      <View>
+        <Image
+          style={{ width: 150, height: 100 }}
+          source={{
+            uri: "https://www.logolynx.com/images/logolynx/4c/4c1e9d4c49f1ee74f3bb871a181fea10.png?fbclid=IwAR1tP9XGFKwI2qT8BQPXfkOwGoK-KMagmKWmwV0Esit9IeSz67oecIbnohk",
+          }}
+        />
+      </View>
 
-        <VStack space={3} mt="5">
-          <FormControl>
-            <FormControl.Label>Email ID</FormControl.Label>
-            <Input
+      <KeyboardAvoidingView>
+        <View style={{ alignItems: "center" }}>
+          <Text
+            style={{
+              fontSize: 17,
+              fontWeight: "bold",
+              marginTop: 12,
+              color: "#041E42",
+            }}
+          >
+            Login In to your Account
+          </Text>
+        </View>
+
+        <View style={{ marginTop: 70 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 5,
+              backgroundColor: "#D0D0D0",
+              paddingVertical: 5,
+              borderRadius: 5,
+              marginTop: 30,
+            }}
+          >
+            <MaterialIcons
+              style={{ marginLeft: 8 }}
+              name="email"
+              size={24}
+              color="gray"
+            />
+
+            <TextInput
               value={email}
               onChangeText={(text) => setEmail(text)}
-              placeholder="Email"
+              style={{
+                color: "gray",
+                marginVertical: 10,
+                width: 300,
+                fontSize: email ? 16 : 16,
+              }}
+              placeholder="enter your Email"
             />
-          </FormControl>
-          <FormControl>
-            <FormControl.Label>Password</FormControl.Label>
-            <Input
+          </View>
+        </View>
+
+        <View style={{ marginTop: 10 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 5,
+              backgroundColor: "#D0D0D0",
+              paddingVertical: 5,
+              borderRadius: 5,
+              marginTop: 30,
+            }}
+          >
+            <AntDesign
+              name="lock1"
+              size={24}
+              color="gray"
+              style={{ marginLeft: 8 }}
+            />
+
+            <TextInput
               value={password}
               onChangeText={(text) => setPassword(text)}
-              placeholder="Password"
-              type="password"
+              secureTextEntry={true}
+              style={{
+                color: "gray",
+                marginVertical: 10,
+                width: 300,
+                fontSize: password ? 16 : 16,
+              }}
+              placeholder="enter your Password"
             />
-            <Link _text={{ fontSize: "xs", fontWeight: "500", color: "indigo.500" }} alignSelf="flex-end" mt="1">
-              Forget Password?
-            </Link>
-          </FormControl>
-          <Button mt="2" colorScheme="indigo" onPress={handleLogin}>
-            Sign in
-          </Button>
+          </View>
+        </View>
 
-          <HStack mt="6" justifyContent="center">
-            <Text fontSize="sm" color="coolGray.600" _dark={{ color: "warmGray.200" }}>
-              Bạn chưa có tài khoản?{" "}
-            </Text>
-            <Link _text={{ color: "indigo.500", fontWeight: "medium", fontSize: "sm" }} onPress={() => navigation.navigate('Register')}>
-              Sign Up
-            </Link>
-          </HStack>
-        </VStack>
-      </Box>
-    </Center>
+        <View
+          style={{
+            marginTop: 12,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text>Keep me logged in</Text>
+
+          <Text style={{ color: "#007FFF", fontWeight: "500" }}>
+            Forgot Password
+          </Text>
+        </View>
+
+        <View style={{ marginTop: 80 }} />
+
+        <Pressable
+          onPress={handleLogin}
+          style={{
+            width: 200,
+            backgroundColor: "blue",
+            borderRadius: 6,
+            marginLeft: "auto",
+            marginRight: "auto",
+            padding: 15,
+          }}
+        >
+          <Text
+            style={{
+              textAlign: "center",
+              color: "white",
+              fontSize: 16,
+              fontWeight: "bold",
+            }}
+          >
+            Login
+          </Text>
+        </Pressable>
+
+        <Pressable
+          onPress={() => navigation.navigate("Register")}
+          style={{ marginTop: 15 }}
+        >
+          <Text style={{ textAlign: "center", color: "gray", fontSize: 16 }}>
+            Don't have an account? Sign Up
+          </Text>
+        </Pressable>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   )
 }
