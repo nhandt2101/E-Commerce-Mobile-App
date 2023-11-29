@@ -29,10 +29,8 @@ export default function RegisterScreen({ navigation }) {
   };
 
   useEffect(() => {
-    async function initializeDatabase() {
-      await createTableUser();
-    }
-    initializeDatabase();
+    createTableUser();
+    
   }, []);
 
   const handleSignUp = async () => {

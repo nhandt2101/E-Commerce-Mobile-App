@@ -27,7 +27,7 @@ export default function ShoppingCartScreen({ navigation }) {
             const data_user = await getData("@user");
             setUser(data_user);
         } catch (error) {
-            console.error("Error retrieving data:", error);
+            console.error("Error retrieving data5:", error);
         }
     }
 
@@ -40,7 +40,7 @@ export default function ShoppingCartScreen({ navigation }) {
             setUser(data_user);
             setProducts([...data_2])
         } catch (error) {
-            console.error("Error retrieving data:", error);
+            console.error("Error retrieving data6:", error);
         } finally {
             setIsAddingToCart(false);
         }
