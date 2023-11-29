@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from "react-native";
 import Navigator from "../../component/navigative";
 
-import { getCart, deleteCart, createTableCart, dropTableCart } from "../../db/cart";
-import { getData, storeData } from "../../component/store";
+import { getCart, deleteCart } from "../../db/cart";
+import { getData } from "../../component/store";
 import { calculateShippingCost } from "../../db/shipCost";
 
 export default function CartScreen({ navigation }) {
@@ -19,7 +19,7 @@ export default function CartScreen({ navigation }) {
     }, [user]);
 
     useEffect(() => {
-        if(user == null) getuser();
+        if (user == null) getuser();
     }, [user]);
 
     const getuser = async () => {
@@ -33,7 +33,7 @@ export default function CartScreen({ navigation }) {
     }
 
     const fetchData = async () => {
-        if(user != null) {
+        if (user != null) {
             try {
                 const data = await getCart(user.id);
                 setProducts(data);
@@ -315,17 +315,17 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     totalPriceContainer: {
-        flexDirection: 'column', 
+        flexDirection: 'column',
         justifyContent: 'flex-end',
         paddingVertical: 10,
         paddingHorizontal: 20,
-      },
-      totalPriceText: {
+    },
+    totalPriceText: {
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 5,
-        textAlign: 'right', 
-      },
+        textAlign: 'right',
+    },
     selectAllRow: {
         flexDirection: "row",
         alignItems: "center",

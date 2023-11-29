@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList as RNFlatList } from 'react-native'; // Import FlatList from react-native
+import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList as RNFlatList } from 'react-native';
 import Navigator from '../../component/navigative';
 import { FlatList } from 'native-base';
 
@@ -38,7 +38,7 @@ const Customer = ({ navigation }) => {
 
   useEffect(() => {
     getDataProduct();
-  }, [user]); 
+  }, [user]);
 
   const handleProfile = () => {
     navigation.navigate('ChangeProfile');
@@ -66,8 +66,8 @@ const Customer = ({ navigation }) => {
     const orderTime = new Date(order.createAt).getTime();
     const timeDifference = currentTime - orderTime;
 
-    const oneDayInMilliseconds = 24 * 60 * 60 * 1000; 
-    const sevenDaysInMilliseconds = 7 * oneDayInMilliseconds; 
+    const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
+    const sevenDaysInMilliseconds = 7 * oneDayInMilliseconds;
 
     if (timeDifference <= oneDayInMilliseconds) {
       return 'Đang đóng gói';
@@ -99,7 +99,7 @@ const Customer = ({ navigation }) => {
           </TouchableOpacity>
 
           <RNFlatList
-            data={products} 
+            data={products}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => <OrderItem order={item} />}
           />
@@ -128,13 +128,13 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginBottom: 20,
     padding: 10,
-  backgroundColor: '#fff',
-  borderRadius: 8,
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.25,
-  shadowRadius: 3.84,
-  elevation: 5,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   profileImage: {
     width: 50,

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Center, Box, Heading, VStack, FormControl, Input, Button, HStack, Link, Text } from 'native-base';
+import { Text } from 'native-base';
 import {
-  StyleSheet,
   View,
   SafeAreaView,
   Image,
@@ -11,9 +10,7 @@ import {
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createTableUser, getUser, dropTableUser } from '../../db/user';
+import { createTableUser, getUser } from '../../db/user';
 import { storeData } from '../../component/store';
 
 export default function LoginScreen({ navigation }) {
@@ -44,7 +41,7 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: "white", alignItems: "center"}}
+      style={{ flex: 1, backgroundColor: "white", alignItems: "center" }}
     >
       <View>
         <Image

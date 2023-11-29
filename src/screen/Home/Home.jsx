@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import { View, StyleSheet, TouchableOpacity, Text, FlatList, Image, Dimensions, TextInput, ScrollView } from "react-native";
 import { SliderBox } from "react-native-image-slider-box";
 import Navigator from "../../component/navigative";
-import { createTableProduct, dropTableProduct, findProductCombined, createTableAndLoadData } from '../../db/product';
-import data from "../../db/products.json";
-import { getData, storeData } from "../../component/store";
+import { findProductCombined, createTableAndLoadData, createTableProduct } from '../../db/product';
+import { storeData } from "../../component/store";
 
 export default function HomeScreen({ navigation }) {
 
@@ -15,6 +14,7 @@ export default function HomeScreen({ navigation }) {
   useEffect(() => {
     async function initializeDatabase() {
       try {
+        await createTableProduct();
         await createTableAndLoadData();
       } catch (error) {
         console.error("Error initializing database:", error);
@@ -94,28 +94,28 @@ export default function HomeScreen({ navigation }) {
         </TouchableOpacity>
       </View>
       <ScrollView>
-      <SliderBox
-        images={images}
-        autoPlay
-        circleLoop
-        dotColor={"#13274F"}
-        inactiveDotColor="#90A4AE"
-        ImageComponentStyle={{ width: "100%" }}
-      />
-
-      {products.length === 0 ? (
-        <Text style={styles.emptyText}>{txt}</Text>
-      ) : (
-        <FlatList
-          data={products}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          numColumns={numColumns}
-          contentContainerStyle={styles.productList}
+        <SliderBox
+          images={images}
+          autoPlay
+          circleLoop
+          dotColor={"#13274F"}
+          inactiveDotColor="#90A4AE"
+          ImageComponentStyle={{ width: "100%" }}
         />
-      )}
 
-    </ScrollView>
+        {products.length === 0 ? (
+          <Text style={styles.emptyText}>{txt}</Text>
+        ) : (
+          <FlatList
+            data={products}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            numColumns={numColumns}
+            contentContainerStyle={styles.productList}
+          />
+        )}
+
+      </ScrollView>
       <Navigator />
     </View>
   );
@@ -212,8 +212,8 @@ const styles = StyleSheet.create({
     marginTop: 5,
     // textAlign: "center",
     lineHeight: 18, // Set a fixed line height
-  maxHeight: 36, // Set a max height for two lines
-  overflow: 'hidden', // Hide overflow content
+    maxHeight: 36, // Set a max height for two lines
+    overflow: 'hidden', // Hide overflow content
   },
   emptyText: {
     fontSize: 16,

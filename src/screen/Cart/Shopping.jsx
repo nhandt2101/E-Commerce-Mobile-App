@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ScrollView }
 import Navigator from "../../component/navigative";
 
 import { getData, storeData } from "../../component/store";
-import { insertCart, dropTableCart, createTableCart } from "../../db/cart";
+import { insertCart } from "../../db/cart";
 import { findProduct } from "../../db/product";
 
 
@@ -49,8 +49,8 @@ export default function ShoppingCartScreen({ navigation }) {
     const addToCart = async (item) => {
         try {
             const { describe, link_img, price, productName, sale_id } = item;
-            insertCart(productName, price, describe, link_img, quantity,  sale_id, user.id );
-            
+            insertCart(productName, price, describe, link_img, quantity, sale_id, user.id);
+
             alert("done");
         } catch (e) {
             alert('Vui lòng thử lại.');

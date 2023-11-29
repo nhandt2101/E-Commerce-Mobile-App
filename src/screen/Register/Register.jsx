@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Center, Box, Heading, VStack, FormControl, Input, Button, Text, HStack } from 'native-base';
+import { Text } from 'native-base';
 import { CheckBox } from 'react-native-elements';
 import {
   StyleSheet,
@@ -14,8 +14,7 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import { createTableUser, dropTableUser, insertUser } from '../../db/user';
+import { createTableUser, insertUser } from '../../db/user';
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -57,7 +56,7 @@ export default function RegisterScreen({ navigation }) {
 
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: "white", alignItems: "center"}}
+      style={{ flex: 1, backgroundColor: "white", alignItems: "center" }}
     >
       <View>
         <Image

@@ -36,29 +36,24 @@ const createTableProduct = () => {
 };
 
 const createTableAndLoadData = async () => {
-  try {
-    const tableExists = await createTableProduct();
     try {
       let product = await getAllProduct();
-      if(product != null) {
+      if (product != null) {
         return;
       }
       const jsonData = require('./products.json');
 
-        for (const product of jsonData) {
-          let name = product['name']
-          let price = product['price']
-          let describe = product['describe']
-          let link_img = product['link_img']
-          let sale_id = product['sale_id']
-          await insertProduct(name, price, describe, link_img, sale_id);
-        }
+      for (const product of jsonData) {
+        let name = product['name']
+        let price = product['price']
+        let describe = product['describe']
+        let link_img = product['link_img']
+        let sale_id = product['sale_id']
+        await insertProduct(name, price, describe, link_img, sale_id);
+      }
     } catch (error) {
       console.error("Error initializing database:", error);
     }
-  } catch (error) {
-    console.error('Error creating table and loading data:', error);
-  }
 };
 
 const insertProduct = (name, price, describe, link_img, sale_id) => {
