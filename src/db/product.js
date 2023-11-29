@@ -1,4 +1,6 @@
 import * as SQLite from 'expo-sqlite';
+import { getAddressBySaleId } from './user';
+
 const unidecode = require('unidecode');
 
 const db = SQLite.openDatabase('Mobile.db');
@@ -21,12 +23,10 @@ const createTableProduct = () => {
         `,
         [],
         (_, result) => {
-          // TODO
           resolve();
         },
         (_, error) => {
           console.error('Error creating database:', error);
-          // TODO
           reject(error);
         }
       );
@@ -48,7 +48,7 @@ const insertProduct = (name, price, describe, link_img, sale_id) => {
           }
         },
         (_, error) => {
-          console.error('Error inserting user:', error);
+          console.error('Error inserting product:', error);
           reject(error);
         }
       );
@@ -62,11 +62,13 @@ const getAllProduct = () => {
       tx.executeSql(
         'SELECT * FROM products',
         [],
-        (_, result) => {
+        async (_, result) => {
           if (result.rows.length > 0) {
             const products = [];
             for (let i = 0; i < result.rows.length; i++) {
               const productData = result.rows.item(i);
+              // const address = await getAddressBySaleId(1);
+
               products.push({
                 id: productData.id,
                 productName: productData.name,
@@ -74,6 +76,7 @@ const getAllProduct = () => {
                 link_img: productData.link_img,
                 price: productData.price,
                 sale_id: productData.sale_id,
+                address_sale: "Ho Chi Minh, Viet Nam",
               });
             }
             resolve(products);
@@ -96,11 +99,13 @@ const findProductTrue = (input) => {
       tx.executeSql(
         'SELECT * FROM products WHERE name LIKE ? OR describe LIKE ?',
         [`%${input}%`, `%${input}%`],
-        (_, result) => {
+        async (_, result) => {
           if (result.rows.length > 0) {
             const products = [];
             for (let i = 0; i < result.rows.length; i++) {
               const productData = result.rows.item(i);
+              // const address = await getAddressBySaleId(productData.sale_id);
+
               products.push({
                 id: productData.id,
                 productName: productData.name,
@@ -108,6 +113,7 @@ const findProductTrue = (input) => {
                 link_img: productData.link_img,
                 price: productData.price,
                 sale_id: productData.sale_id,
+                address_sale: "Ho Chi Minh, Viet Nam",
               });
             }
             resolve(products);
@@ -181,7 +187,7 @@ const findProduct = (input, maxDistance) => {
       tx.executeSql(
         'SELECT * FROM products',
         [],
-        (_, result) => {
+        async (_, result) => {
           if (result.rows.length > 0) {
             if (input.length == 0) {
               resolve(result);
@@ -194,10 +200,14 @@ const findProduct = (input, maxDistance) => {
               const productName = preprocessVietnameseText(productData.name);
               const productDescription = preprocessVietnameseText(productData.describe);
 
-              let distance = Math.min(levenshtein(input, productName), levenshtein(input, productDescription))
-              distance = Math.min(distance, levenshtein(input, productName + productDescription))
+              let distance = Math.min(
+                levenshtein(input, productName),
+                levenshtein(input, productDescription)
+              );
+              distance = Math.min(distance, levenshtein(input, productName + productDescription));
 
               if (distance < maxDistance) {
+                // const address = await getAddressBySaleId(productData.sale_id);
                 closestProducts.push({
                   id: productData.id,
                   productName: productData.name,
@@ -205,8 +215,9 @@ const findProduct = (input, maxDistance) => {
                   link_img: productData.link_img,
                   price: productData.price,
                   sale_id: productData.sale_id,
-                  distance: distance
-                })
+                  distance: distance,
+                  address_sale: "Ho Chi Minh, Viet Nam",
+                });
               }
             }
 
@@ -245,7 +256,7 @@ const getBySale = (input) => {
       tx.executeSql(
         'SELECT * FROM products WHERE sale_id = ?',
         [input],
-        (_, result) => {
+        async (_, result) => {
           if (result.rows.length > 0) {
             const products = [];
             for (let i = 0; i < result.rows.length; i++) {
@@ -277,15 +288,13 @@ const deleteProduct = (input) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        'SELECT * FROM products WHERE id = ?',
+        'DELETE FROM products WHERE id = ?',
         [input],
         (_, result) => {
-          // TODO
-          resolve();
+          resolve(); // Đổi từ `resolve()` thành `resolve(result)` nếu bạn muốn trả về thông tin về số hàng đã bị xóa
         },
         (_, error) => {
-          console.error('Error creating database:', error);
-          // TODO
+          console.error('Error deleting product:', error);
           reject(error);
         }
       );
@@ -297,15 +306,13 @@ const dropTableProduct = () => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        `DROP TABLE products`,
+        'DROP TABLE IF EXISTS products',
         [],
         (_, result) => {
-          // TODO
           resolve(true);
         },
         (_, error) => {
-          console.error('Error creating database:', error);
-          // TODO
+          console.error('Error dropping table:', error);
           reject(error);
         }
       );

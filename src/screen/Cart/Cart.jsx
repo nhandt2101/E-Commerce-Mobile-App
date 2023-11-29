@@ -4,11 +4,14 @@ import Navigator from "../../component/navigative";
 
 import { getCart, deleteCart, createTableCart, dropTableCart } from "../../db/cart";
 import { getData, storeData } from "../../component/store";
+import { calculateShippingCost } from "../../db/shipCost";
 
 export default function CartScreen({ navigation }) {
     const [products, setProducts] = useState(null);
     const [selectAll, setSelectAll] = useState(false);
     const [totalPrice, setTotalPrice] = useState("0đ");
+    const [totalProduct, setTotalProduct] = useState("0đ");
+    const [totalShip, setTotalShip] = useState("0đ");
     const [user, setUser] = useState(null);
 
     useEffect(() => {
@@ -40,20 +43,32 @@ export default function CartScreen({ navigation }) {
         }
     };
 
-    const calculateTotalPrice = (updatedProducts) => {
-        let total = 0;
+    const calculateTotalPrice = async (updatedProducts) => {
+        let totalPro = 0;
+        let totalShipCost = 0;
 
         for (let i = 0; i < updatedProducts.length; ++i) {
             if (updatedProducts[i].isSelect) {
                 const priceString = updatedProducts[i].price.replace(/[^0-9]/g, "");
                 const price = parseInt(priceString);
-                total += price * updatedProducts[i].quantity;
+                totalPro += price * updatedProducts[i].quantity;
+                // totalShipCost += calculateShippingCost(user.address, updatedProducts[i].address_sale)
+                totalShipCost += await calculateShippingCost(user.address, "Ho chi minh, Ha noi")
             }
         }
 
-        const formattedTotal = total.toLocaleString("vi-VN");
-        const displayTotal = formattedTotal + "đ";
+        let formattedTotalPro = totalPro.toLocaleString("vi-VN");
+        let displayTotalPro = formattedTotalPro + "đ";
+        setTotalProduct(displayTotalPro);
 
+        // console.log(totalShipCost)
+
+        let formattedTotalShip = totalShipCost.toLocaleString("vi-VN");
+        let displayTotalShip = formattedTotalShip + "đ";
+        setTotalShip(displayTotalShip);
+
+        let formattedTotal = (totalPro + totalShipCost).toLocaleString("vi-VN");
+        let displayTotal = formattedTotal + "đ";
         setTotalPrice(displayTotal);
     };
 
@@ -186,7 +201,9 @@ export default function CartScreen({ navigation }) {
             />
 
             <View style={styles.totalPriceContainer}>
-                <Text style={styles.totalPriceText}>Total Price: {totalPrice}</Text>
+                <Text style={styles.totalPriceText}>Total Product: {totalProduct} {'\n'} </Text>
+                <Text style={styles.totalPriceText}>Total Shipping: {totalShip} {'\n'}</Text>
+                <Text style={styles.totalPriceText}>Total Price: {totalPrice} {'\n'}</Text>
             </View>
             <Navigator></Navigator>
         </View>
@@ -298,15 +315,17 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     totalPriceContainer: {
-        flexDirection: "row",
-        justifyContent: "flex-end",
+        flexDirection: 'column', 
+        justifyContent: 'flex-end',
         paddingVertical: 10,
         paddingHorizontal: 20,
-    },
-    totalPriceText: {
+      },
+      totalPriceText: {
         fontSize: 18,
-        fontWeight: "bold",
-    },
+        fontWeight: 'bold',
+        marginBottom: 5,
+        textAlign: 'right', 
+      },
     selectAllRow: {
         flexDirection: "row",
         alignItems: "center",

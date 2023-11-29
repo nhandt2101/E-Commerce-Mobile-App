@@ -99,6 +99,29 @@ const getUser = async (email, password) => {
     });
 };
 
+const getAddressBySaleId = (saleId) => {
+    return new Promise((resolve, reject) => {
+      db.transaction((tx) => {
+        tx.executeSql(
+          'SELECT address FROM users WHERE id = ?',
+          [saleId],
+          (_, result) => {
+            if (result.rows.length > 0) {
+              const address = result.rows.item(0).address;
+              resolve(address);
+            } else {
+              reject(new Error('No user found with the specified sale_id.'));
+            }
+          },
+          (_, error) => {
+            console.error('Error querying user:', error);
+            reject(error);
+          }
+        );
+      });
+    });
+  };
+
 const dropTableUser = async () => {
     return new Promise((resolve, reject) => {
         db.transaction(
@@ -119,4 +142,4 @@ const dropTableUser = async () => {
     });
 };
 
-export { createTableUser, insertUser, updateUser, getUser, dropTableUser };
+export { createTableUser, insertUser, updateUser, getUser, getAddressBySaleId, dropTableUser };
