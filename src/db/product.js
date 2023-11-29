@@ -23,15 +23,42 @@ const createTableProduct = () => {
         `,
         [],
         (_, result) => {
-          resolve();
+          const tableCreated = result.insertId !== undefined;
+          resolve(tableCreated);
         },
         (_, error) => {
-          console.error('Error creating database:', error);
+          console.log('Error creating database:', error);
           reject(error);
         }
       );
     });
   });
+};
+
+const createTableAndLoadData = async () => {
+  try {
+    const tableExists = await createTableProduct();
+    try {
+      let product = await getAllProduct();
+      if(product != null) {
+        return;
+      }
+      const jsonData = require('./products.json');
+
+        for (const product of jsonData) {
+          let name = product['name']
+          let price = product['price']
+          let describe = product['describe']
+          let link_img = product['link_img']
+          let sale_id = product['sale_id']
+          await insertProduct(name, price, describe, link_img, sale_id);
+        }
+    } catch (error) {
+      console.error("Error initializing database:", error);
+    }
+  } catch (error) {
+    console.error('Error creating table and loading data:', error);
+  }
 };
 
 const insertProduct = (name, price, describe, link_img, sale_id) => {
@@ -81,7 +108,7 @@ const getAllProduct = () => {
             }
             resolve(products);
           } else {
-            reject(new Error('No products found.'));
+            resolve(null);
           }
         },
         (_, error) => {
@@ -320,4 +347,4 @@ const dropTableProduct = () => {
   });
 };
 
-export { createTableProduct, insertProduct, getAllProduct, findProductTrue, findProduct, findProductCombined, getBySale, deleteProduct, dropTableProduct };
+export { createTableProduct, createTableAndLoadData, insertProduct, getAllProduct, findProductTrue, findProduct, findProductCombined, getBySale, deleteProduct, dropTableProduct };

@@ -30,7 +30,6 @@ export default function RegisterScreen({ navigation }) {
 
   useEffect(() => {
     createTableUser();
-    
   }, []);
 
   const handleSignUp = async () => {

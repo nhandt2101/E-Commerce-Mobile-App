@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, StyleSheet, TouchableOpacity, Text, FlatList, Image, Dimensions, TextInput, ScrollView } from "react-native";
 import { SliderBox } from "react-native-image-slider-box";
 import Navigator from "../../component/navigative";
-import { createTableProduct, dropTableProduct, findProductCombined } from '../../db/product';
+import { createTableProduct, dropTableProduct, findProductCombined, createTableAndLoadData } from '../../db/product';
 import data from "../../db/products.json";
 import { getData, storeData } from "../../component/store";
 
@@ -14,7 +14,11 @@ export default function HomeScreen({ navigation }) {
 
   useEffect(() => {
     async function initializeDatabase() {
-      await createTableProduct();
+      try {
+        await createTableAndLoadData();
+      } catch (error) {
+        console.error("Error initializing database:", error);
+      }
     }
     initializeDatabase();
   }, []);
@@ -77,7 +81,6 @@ export default function HomeScreen({ navigation }) {
   );
 
   return (
-    
     <View style={styles.container}>
       <View style={styles.searchContainer}>
         <TextInput
