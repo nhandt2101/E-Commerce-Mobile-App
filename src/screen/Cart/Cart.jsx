@@ -28,7 +28,7 @@ export default function CartScreen({ navigation }) {
             setUser(data_user);
             console.log(data_user);
         } catch (error) {
-            console.error("Error retrieving data:", error);
+            console.error("Error retrieving data3:", error);
         }
     }
 
@@ -38,7 +38,7 @@ export default function CartScreen({ navigation }) {
                 const data = await getCart(user.id);
                 setProducts(data);
             } catch (error) {
-                console.error("Error retrieving data:", error);
+                console.error("Error retrieving data4:", error);
             }
         }
     };

@@ -1,7 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Center, Box, Heading, VStack, FormControl, Input, Button, Text, HStack } from 'native-base';
 import { CheckBox } from 'react-native-elements';
-
+import {
+  StyleSheet,
+  View,
+  SafeAreaView,
+  Pressable,
+  Image,
+  KeyboardAvoidingView,
+  TextInput,
+  Alert,
+} from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import { createTableUser, dropTableUser, insertUser } from '../../db/user';
 
 export default function RegisterScreen({ navigation }) {
@@ -16,10 +29,8 @@ export default function RegisterScreen({ navigation }) {
   };
 
   useEffect(() => {
-    async function initializeDatabase() {
-      await createTableUser();
-    }
-    initializeDatabase();
+    createTableUser();
+    
   }, []);
 
   const handleSignUp = async () => {
@@ -46,53 +57,186 @@ export default function RegisterScreen({ navigation }) {
   }
 
   return (
-    <Center flex={1}>
-      <Box safeArea p={2} w="100%" h="100%" bg="white" rounded="lg" justifyContent="center">
-        <Heading size="lg" color="coolGray.800" _dark={{ color: 'warmGray.50' }} fontWeight="semibold" textAlign="center">
-          Welcome
-        </Heading>
-        <VStack space={3} mt={5}>
-          <FormControl>
-            <FormControl.Label>Email</FormControl.Label>
-            <Input placeholder="Email" value={email} onChangeText={text => setEmail(text)} />
-          </FormControl>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: "white", alignItems: "center"}}
+    >
+      <View>
+        <Image
+          style={{ width: 150, height: 100 }}
+          source={{
+            uri: "https://www.logolynx.com/images/logolynx/4c/4c1e9d4c49f1ee74f3bb871a181fea10.png?fbclid=IwAR1tP9XGFKwI2qT8BQPXfkOwGoK-KMagmKWmwV0Esit9IeSz67oecIbnohk",
+          }}
+        />
+      </View>
 
-          <FormControl>
-            <FormControl.Label>Password</FormControl.Label>
-            <Input placeholder="Password" type="password" value={password} onChangeText={text => setPassword(text)} />
-            <FormControl.HelperText _text={{ fontSize: 'xs' }}>
-              Password phải có trên 8 ký tự và phải có ký tự in hoa, in thường và ký tự số
-            </FormControl.HelperText>
-
-            {error !== '' && (
-              <Text color="red.500" fontSize="sm" mt={2}>
-                {error}
-              </Text>
-            )}
-          </FormControl>
-
-          <FormControl>
-            <FormControl.Label>Confirm Password</FormControl.Label>
-            <Input placeholder="Confirm Password" type="password" value={confirmPassword} onChangeText={text => setConfirmPassword(text)} />
-          </FormControl>
-
-          <CheckBox
-            title='Tài khoản người bán hàng'
-            checked={isSelected}
-            onPress={() => setSelection(!isSelected)}
-          />
-
-          <Button mt={2} colorScheme="indigo" onPress={handleSignUp}>
-            Sign up
-          </Button>
-        </VStack>
-        <HStack space={1} alignItems="center" mt={2}>
-          <Text>Bạn đã có tài khoản?</Text>
-          <Text fontSize="md" color="indigo.500" onPress={handleLogIn}>
-            Đăng nhập
+      <KeyboardAvoidingView>
+        <View style={{ alignItems: "center" }}>
+          <Text
+            style={{
+              fontSize: 17,
+              fontWeight: "bold",
+              marginTop: 12,
+              color: "#041E42",
+            }}
+          >
+            Register to your Account
           </Text>
-        </HStack>
-      </Box>
-    </Center>
+        </View>
+
+        <View style={{ marginTop: 30 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 5,
+              backgroundColor: "#D0D0D0",
+              paddingVertical: 5,
+              borderRadius: 5,
+              marginTop: 30,
+            }}
+          >
+            <Ionicons
+              name="ios-person"
+              size={24}
+              color="gray"
+              style={{ marginLeft: 8 }}
+            />
+            <TextInput
+              value={email}
+              onChangeText={(text) => setEmail(text)}
+              style={{
+                color: "gray",
+                marginVertical: 10,
+                width: 300,
+                fontSize: 16,
+              }}
+              placeholder="Email"
+            />
+          </View>
+
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 5,
+              backgroundColor: "#D0D0D0",
+              paddingVertical: 5,
+              borderRadius: 5,
+              marginTop: 30,
+            }}
+          >
+            <MaterialIcons
+              style={{ marginLeft: 8 }}
+              name="email"
+              size={24}
+              color="gray"
+            />
+
+            <TextInput
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+              style={{
+                color: "gray",
+                marginVertical: 10,
+                width: 300,
+                fontSize: password ? 16 : 16,
+              }}
+              placeholder="Password"
+            />
+          </View>
+        </View>
+
+        <View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 5,
+              backgroundColor: "#D0D0D0",
+              paddingVertical: 5,
+              borderRadius: 5,
+              marginTop: 30,
+            }}
+          >
+            <AntDesign
+              name="lock1"
+              size={24}
+              color="gray"
+              style={{ marginLeft: 8 }}
+            />
+
+            <TextInput
+              value={confirmPassword}
+              onChangeText={(text) => setConfirmPassword(text)}
+              secureTextEntry={true}
+              style={{
+                color: "gray",
+                marginVertical: 10,
+                width: 300,
+                fontSize: email ? 16 : 16,
+              }}
+              placeholder="confirm Password"
+            />
+          </View>
+        </View>
+
+        <View
+          style={{
+            marginTop: 12,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text>Keep me logged in</Text>
+
+          <Text style={{ color: "#007FFF", fontWeight: "500" }}>
+            Forgot Password
+          </Text>
+        </View>
+        <CheckBox
+          style={{
+            marginLeft: 20,
+          }}
+          title='Tài khoản người bán hàng'
+          checked={isSelected}
+          onPress={() => setSelection(!isSelected)}
+        />
+
+        <View style={{ marginTop: 80 }} />
+
+        <Pressable
+          onPress={handleSignUp}
+          style={{
+            width: 200,
+            backgroundColor: "blue",
+            borderRadius: 6,
+            marginLeft: "auto",
+            marginRight: "auto",
+            padding: 15,
+          }}
+        >
+          <Text
+            style={{
+              textAlign: "center",
+              color: "white",
+              fontSize: 16,
+              fontWeight: "bold",
+            }}
+          >
+            Register
+          </Text>
+        </Pressable>
+
+        <Pressable
+          onPress={() => navigation.goBack()}
+          style={{ marginTop: 15 }}
+        >
+          <Text style={{ textAlign: "center", color: "gray", fontSize: 16 }}>
+            Already have an account? Sign In
+          </Text>
+        </Pressable>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
