@@ -93,11 +93,11 @@ export default function RegisterScreen({ navigation }) {
               marginTop: 30,
             }}
           >
-            <Ionicons
-              name="ios-person"
+            <MaterialIcons
+              style={{ marginLeft: 8 }}
+              name="email"
               size={24}
               color="gray"
-              style={{ marginLeft: 8 }}
             />
             <TextInput
               value={email}
@@ -123,16 +123,17 @@ export default function RegisterScreen({ navigation }) {
               marginTop: 30,
             }}
           >
-            <MaterialIcons
-              style={{ marginLeft: 8 }}
-              name="email"
+            <AntDesign
+              name="lock1"
               size={24}
               color="gray"
+              style={{ marginLeft: 8 }}
             />
 
             <TextInput
               value={password}
               onChangeText={(text) => setPassword(text)}
+              secureTextEntry={true}
               style={{
                 color: "gray",
                 marginVertical: 10,
