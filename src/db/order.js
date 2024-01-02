@@ -1,0 +1,140 @@
+import * as SQLite from 'expo-sqlite';
+
+const db = SQLite.openDatabase('Mobile.db');
+
+const createTableOrder = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        `CREATE TABLE IF NOT EXISTS orders (
+          id INTEGER PRIMARY KEY NOT NULL,
+          link_img TEXT NOT NULL,
+          name TEXT DEFAULT 'Product name',
+          sale_id INTEGER NOT NULL,
+          user_id INTEGER NOT NULL,
+          price REAL NOT NULL DEFAULT 10.0,
+          describe TEXT DEFAULT 'abc abc abc',
+          quantity INTEGER NOT NULL,
+          createAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (sale_id) REFERENCES users(id),
+          FOREIGN KEY (user_id) REFERENCES users(id)
+        );`,
+        [],
+        (_, result) => {
+          // TODO
+          resolve();
+        },
+        (_, error) => {
+          console.error('Error creating database:', error);
+          // TODO
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+
+const insertOrder = (name, price, describe, link_img, quantity, sale_id, user_id) => {
+    console.log(quantity);
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'INSERT INTO orders (name, price, describe, link_img, quantity, sale_id, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [name, price, describe, link_img, quantity, sale_id, user_id],
+        (_, result) => {
+          if (result.rowsAffected > 0) {
+            resolve(result);
+          } else {
+            reject(new Error('Insertion failed'));
+          }
+        },
+        (_, error) => {
+          console.error('Error inserting user:', error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+const getOrder = (input) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'SELECT * FROM orders WHERE user_id = ?',
+        [input],
+        (_, result) => {
+          if (result.rows.length > 0) {
+            const products = [];
+            for (let i = 0; i < result.rows.length; i++) {
+              const productData = result.rows.item(i);
+              products.push({
+                id: productData.id,
+                productName: productData.name,
+                describe: productData.describe,
+                link_img: productData.link_img,
+                price: productData.price,
+                sale_id: productData.sale_id,
+                quantity: productData.quantity,
+                isSelect: false,
+                createAt: productData.createAt,
+              });
+            }
+            resolve(products);
+          } else {
+            reject(new Error('No products found.'));
+          }
+        },
+        (_, error) => {
+          console.error('Error querying products:', error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+const deleteOrder = (id) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'DELETE FROM orders WHERE id = ?',
+        [id],
+        (_, result) => {
+          if (result.rowsAffected > 0) {
+            resolve(result);
+          } else {
+            reject(new Error('Insertion failed'));
+          }
+        },
+        (_, error) => {
+          console.error('Error inserting user:', error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+const dropTableOrder = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        `DROP TABLE orders`,
+        [],
+        (_, result) => {
+          // TODO
+          resolve(true);
+        },
+        (_, error) => {
+          console.error('Error creating database:', error);
+          // TODO
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+export { createTableOrder, insertOrder, getOrder, deleteOrder, dropTableOrder };

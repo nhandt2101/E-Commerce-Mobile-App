@@ -45,6 +45,7 @@ const ChangeProfile = ({ navigation }) => {
         await storeData("@user", user);
         setError(null);
         alert("Thành công");
+        navigation.navigate('Login')
       } catch (error) {
         console.error("Lỗi khi update hoặc lưu dữ liệu:", error);
       }
@@ -54,6 +55,7 @@ const ChangeProfile = ({ navigation }) => {
         await storeData("@user", user);
         setError(null);
         alert("Thành công");
+        navigation.navigate('Login')
       } catch (error) {
         console.error("Lỗi khi update hoặc lưu dữ liệu:", error);
       }

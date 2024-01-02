@@ -210,10 +210,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     marginTop: 5,
-    // textAlign: "center",
-    lineHeight: 18, // Set a fixed line height
-    maxHeight: 36, // Set a max height for two lines
-    overflow: 'hidden', // Hide overflow content
+    lineHeight: 18,
+    maxHeight: 36, 
+    overflow: 'hidden', 
   },
   emptyText: {
     fontSize: 16,

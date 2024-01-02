@@ -5,6 +5,7 @@ import { FlatList } from 'native-base';
 
 import { getData } from "../../component/store";
 import { getCart } from "../../db/cart";
+import { getOrder } from '../../db/order';
 
 const Customer = ({ navigation }) => {
   const [user, setUser] = useState(null);
@@ -23,9 +24,8 @@ const Customer = ({ navigation }) => {
   const getDataProduct = async () => {
     if (user != null) {
       try {
-        const data = await getCart(user.id);
+        const data = await getOrder(user.id);
         setProducts(data);
-        console.log(data)
       } catch (error) {
         console.error("Error retrieving data:", error);
       }

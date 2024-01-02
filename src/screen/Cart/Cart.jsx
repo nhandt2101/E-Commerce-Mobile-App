@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from "react-native";
 import Navigator from "../../component/navigative";
 
-import { getCart, deleteCart } from "../../db/cart";
+import { getCart, deleteCart, createTableCart } from "../../db/cart";
 import { getData } from "../../component/store";
 import { calculateShippingCost } from "../../db/shipCost";
+import { insertOrder, createTableOrder } from "../../db/order";
 
 export default function CartScreen({ navigation }) {
     const [products, setProducts] = useState(null);
@@ -15,10 +16,19 @@ export default function CartScreen({ navigation }) {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        fetchData();
-    }, [user]);
+        async function initializeDatabase() {
+            try {
+              await createTableOrder();
+              console.log("done")
+            } catch (error) {
+              console.error("Error initializing database:", error);
+            }
+          }
+        initializeDatabase();
+      }, []);
 
     useEffect(() => {
+        fetchData();
         if (user == null) getuser();
     }, [user]);
 
@@ -53,7 +63,7 @@ export default function CartScreen({ navigation }) {
                 const price = parseInt(priceString);
                 totalPro += price * updatedProducts[i].quantity;
                 // totalShipCost += calculateShippingCost(user.address, updatedProducts[i].address_sale)
-                totalShipCost += await calculateShippingCost(user.address, "Ho chi minh, Ha noi")
+                totalShipCost += await calculateShippingCost(user.address, "Ho chi minh, Viet Nam")
             }
         }
 
@@ -134,6 +144,56 @@ export default function CartScreen({ navigation }) {
         setProducts(updatedProducts);
     }
 
+    const buyProducts = async () => {
+        try {
+            for (let i = 0; i < products.length; ++i) {
+                if (products[i].isSelect) {
+                    await insertOrder(
+                        products[i].productName, 
+                        products[i].price, 
+                        products[i].describe, 
+                        products[i].link_img. 
+                        products[i].quantity, 
+                        products[i].sale_id, 
+                        user.id
+                    );
+                } 
+            }
+    
+            await deleteProducts();
+
+            alert("done")
+
+            console.log("done");
+        } catch (e) {
+            console.log("buyProducts",e);
+        }
+        
+    }
+
+    const buyProduct = async (item) => {
+        
+        try {
+            await deleteItem(item);
+            await insertOrder(
+                item.productName,
+                item.price,
+                item.describe,
+                item.link_img,  
+                item.quantity,
+                item.sale_id,
+                user.id
+            );
+
+            alert("done")
+            
+            console.log("done");
+        } catch (e) {
+            console.log("buyProduct", e);
+        }
+        
+    }
+
     const renderItem = ({ item }) => (
         <View style={styles.productItem}>
             <View style={styles.productItem}>
@@ -156,7 +216,7 @@ export default function CartScreen({ navigation }) {
                             <Text style={styles.productPrice}>{item.price}</Text>
                             <View style={styles.productRow}>
                                 <Text style={styles.quantityText}>Quantity: {item.quantity}</Text>
-                                <TouchableOpacity style={styles.buyButton} onPress={() => console.log(item)}>
+                                <TouchableOpacity style={styles.buyButton} onPress={() => buyProduct(item)}>
                                     <Text style={styles.buyButtonText}>Buy</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.deleteButton} onPress={() => deleteItem(item)}>
@@ -185,7 +245,7 @@ export default function CartScreen({ navigation }) {
                 </TouchableOpacity>
                 <View style={styles.actionsContainer}>
                     <View style={styles.productRow}>
-                        <TouchableOpacity style={styles.buyButton} onPress={() => console.log("Not things")}>
+                        <TouchableOpacity style={styles.buyButton} onPress={() => buyProducts()}>
                             <Text style={styles.buyButtonText}>Buy</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.deleteButton} onPress={() => deleteProducts()}>
