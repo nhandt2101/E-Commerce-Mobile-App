@@ -4,7 +4,8 @@ import Navigator from "../../component/navigative";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { getData, storeData } from "../../component/store";
 import { insertCart} from "../../db/cart";
-import { findProduct } from "../../db/product";
+import { findProduct, findComment } from "../../db/product";
+import { addComment } from "../../db/comment";
 import * as SQLite from 'expo-sqlite';
 export default function ShoppingCartScreen({ navigation }) {
     const db = SQLite.openDatabase('Mobile.db');
@@ -16,29 +17,23 @@ export default function ShoppingCartScreen({ navigation }) {
     const [comment, setComment] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     
-  const [currentName, setCurrentName] = useState(undefined);
-    useEffect(() => {
-        db.transaction(tx => {
-          tx.executeSql('CREATE TABLE IF NOT EXISTS names (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)')
-        });
+  const [currentComment, setCurrentComment] = useState(undefined);
     
-        db.transaction(tx => {
-          tx.executeSql('SELECT * FROM names', null,
-            (txObj, resultSet) => setComment(resultSet.rows._array),
-            (txObj, error) => console.log(error)
-          );
-        });
-        setIsLoading(false);
-  }, [db]);
 
+  useEffect(() => {
+      db.transaction(tx => {
+        tx.executeSql('CREATE TABLE IF NOT EXISTS reviews (id INTEGER PRIMARY KEY AUTOINCREMENT, comment TEXT, productID INTEGER, username TEXT)')
+      });
+  }, []);
     useEffect(() => {
         fetchData();
-    }, [product]);
+    }, []);
 
     useEffect(() => {
         getuser();
-    }, [user]);
+    }, []);
 
+    
     const getuser = async () => {
         try {
             const data_user = await getData("@user");
@@ -53,9 +48,16 @@ export default function ShoppingCartScreen({ navigation }) {
             const data = await getData("@product");
             const data_user = await getData("@user");
             const data_2 = await findProduct(data.productName, 30)
+            let data_3 = [];
+            data_3 = await findComment(data.id)
             setProduct(data);
             setUser(data_user);
             setProducts([...data_2])
+            setComment([...data_3])
+            console.log("hhhhhh",data.id);
+            console.log(data_user);
+            console.log(data_2);
+            console.log("333333333333333333",data_3);
         } catch (error) {
             console.error("Error retrieving data6:", error);
         } finally {
@@ -63,18 +65,13 @@ export default function ShoppingCartScreen({ navigation }) {
         }
     };
 
-    const addComment = () => {
-        db.transaction(tx => {
-          tx.executeSql('INSERT INTO names (name) values (?)', [currentName],
-            (txObj, resultSet) => {
-              let existingNames = [...comment];
-              existingNames.push({ id: resultSet.insertId, name: currentName});
-              setComment(existingNames);
-              setCurrentName(undefined);
-            },
-            (txObj, error) => console.log(error)
-          );
-        });
+
+    const insertComment = async (currentComment, productId, username) => {
+        addComment(productId, currentComment, username);
+        let data_3 = [];
+        data_3 = await findComment(productId)
+        setComment([...data_3])
+        setCurrentComment(undefined);
       }
 
     const addToCart = async (item) => {
@@ -92,9 +89,12 @@ export default function ShoppingCartScreen({ navigation }) {
     const showComments = () => {
         return comment.map((comment, index) => {
           return (
-            <View key={index} style={{flexDirection: "row", marginLeft:10}}>
-                <Icon name="user" size={30} color="blue"/>
-                <Text style={styles.fakeComment}> {comment.name}</Text>
+            <View key={index} style={{marginLeft:10}}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Icon name="user" size={30} color="blue" />
+                    <Text style={{ marginLeft: 5, fontWeight:"bold", color:"blue" }}>{comment.username}</Text>
+                </View>
+                <Text style={styles.fakeComment}>{comment.comment}</Text>
             </View>
           );
         });
@@ -153,30 +153,17 @@ export default function ShoppingCartScreen({ navigation }) {
                         </View> 
                         <View style={{flexDirection: "row", marginTop:20,}}>
                             <TextInput
-                                value={currentName} 
-                                onChangeText={setCurrentName}
+                                value={currentComment} 
+                                onChangeText={setCurrentComment}
                                 style={styles.commentText}
                                 placeholder="  Danh gia san pham"
                             />
-                            <TouchableOpacity onPress={addComment}>
+                            <TouchableOpacity onPress={() => insertComment(currentComment, product.id, user.name)}>
                                 <Image source={require('../../../assets/send.png')} style={styles.commentButton}/>
                             </TouchableOpacity>
                         </View>
                         {showComments()}
-                        <ScrollView max>
-                            <View style={{flexDirection: "row", marginLeft:10}}>
-                                <Icon name="user" size={30} color="blue"/>
-                                <Text style={styles.fakeComment}> Very nice</Text>
-                            </View>
-                            <View style={{flexDirection: "row", marginLeft:10}}>
-                                <Icon name="user" size={30} color="blue"/>
-                                <Text style={styles.fakeComment}> Oh my Goddddddddddddddd!!!!!!!!!!!!!!!!!</Text>
-                            </View>
-                            <View style={{flexDirection: "row", marginLeft:10}}>
-                                <Icon name="user" size={30} color="blue"/>
-                                <Text style={styles.fakeComment}> ạkfkjashfkjasncjaksvnajncasjb svjbbbbbbbbbbbbbjkakkkkkkkkkkádasdasa</Text>
-                            </View>
-                        </ScrollView>
+                        
 
                         {products != null ? (
                             <ScrollView>
@@ -326,7 +313,8 @@ const styles = StyleSheet.create({
         borderWidth : 1,
         marginRight: 10,
         marginBottom : 10, 
-        marginLeft: 10,
+        marginTop: 5,
         borderRadius: 10,
+        padding: 5,
     },
 });

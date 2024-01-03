@@ -115,6 +115,27 @@ const getAllProduct = () => {
   });
 };
 
+const findComment = (id) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'SELECT * FROM reviews WHERE productID = ?', [id],
+        async (_, result) => {
+          const resultsArray = [];
+          for (let i = 0; i < result.rows.length; i++) {
+            resultsArray.push(result.rows.item(i));
+          }
+          resolve(resultsArray);
+        },
+        (_, error) => {
+          console.error('Error querying products:', error);
+          reject(error);
+        }
+      );
+    })
+  })  
+}
+
 const findProductTrue = (input) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
@@ -342,4 +363,4 @@ const dropTableProduct = () => {
   });
 };
 
-export { createTableProduct, createTableAndLoadData, insertProduct, getAllProduct, findProductTrue, findProduct, findProductCombined, getBySale, deleteProduct, dropTableProduct };
+export { createTableProduct, createTableAndLoadData, insertProduct, getAllProduct, findComment, findProductTrue, findProduct, findProductCombined, getBySale, deleteProduct, dropTableProduct };
